@@ -37,6 +37,8 @@ class SecretWordCollectionController: UIViewController, StoryBoarded{
     }
 
     private func reloadCollectionViewWithoutAnimation(){
+        
+        //TODO Refacto Section 0 because min Section will be 1 Section
         UIView.performWithoutAnimation {
             collectionView.reloadSections(IndexSet(arrayLiteral: 0))
         }
