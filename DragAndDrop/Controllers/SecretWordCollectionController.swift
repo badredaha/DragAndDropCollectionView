@@ -29,33 +29,43 @@ class SecretWordCollectionController: UIViewController, StoryBoarded{
         super.viewDidLoad()
         
         self.collectionView.register(UINib(nibName: "SecretWordCellView", bundle: nil), forCellWithReuseIdentifier: reuseIdentifier)
+        
         self.collectionView.dragInteractionEnabled = true
         self.collectionView.contentInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
     
         // Do any additional setup after loading the view.
     }
 
+    private func reloadCollectionViewWithoutAnimation(){
+        UIView.performWithoutAnimation {
+            collectionView.reloadSections(IndexSet(arrayLiteral: 0))
+        }
+        
+    }
 }
 
 // Protocol
 
 protocol OrderWordProtocol {
     func reorder(collectionView: UICollectionView, _ destinationIndexPath: IndexPath,_ coordinator: UICollectionViewDropCoordinator)
+    
 }
 
 extension SecretWordCollectionController: OrderWordProtocol{
     func reorder(collectionView: UICollectionView, _ destinationIndexPath: IndexPath,_ coordinator: UICollectionViewDropCoordinator) {
         if let item = coordinator.items.first{
             if let sourceIndexPath = item.sourceIndexPath {
+                
                 collectionView.performBatchUpdates({
-                    self.words.remove(at: sourceIndexPath.item)
-                    if let localObject = item.dragItem.localObject{
-                        self.words.insert(localObject as! String, at: destinationIndexPath.item)
-                    }
-                    collectionView.deleteItems(at: [sourceIndexPath])
-                    collectionView.insertItems(at: [destinationIndexPath])
-                    
-                }, completion: nil)
+                     self.words.remove(at: sourceIndexPath.item)
+                                       if let localObject = item.dragItem.localObject{
+                                           self.words.insert(localObject as! String, at: destinationIndexPath.item)
+                                       }
+                                       collectionView.deleteItems(at: [sourceIndexPath])
+                                       collectionView.insertItems(at: [destinationIndexPath])
+                }) { (finish) in
+                     self.reloadCollectionViewWithoutAnimation()
+                }
                 
                 coordinator.drop(item.dragItem, toItemAt: destinationIndexPath)
             }
