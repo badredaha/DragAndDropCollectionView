@@ -10,27 +10,28 @@ import UIKit
 
 class SecretWordCollectionController: UIViewController, StoryBoarded{
     
-    private var items = ["🍎","💨","🥑","🍅","🥓","🍮","🏀","🥋","🏋🏻‍♀️","🏂"]
+    private let reuseIdentifier = "SecretWordCellView"
+    
+    @IBOutlet weak var collectionView: UICollectionView!
+    
+    //private var items = ["🍎","💨","🥑","🍅","🥓","🍮","🏀","🥋","🏋🏻‍♀️","🏂"]
+    
+    private var words = ["Hello","Word2","AZERTY","BTC","Crypto","Money","Yes","Sure!","LOL","Secret"]
+    
     
     static func instantiate() -> Self {
            let storyBoard = UIStoryboard(name: "Main", bundle: Bundle.main)
-           
            let vc = storyBoard.instantiateViewController(withIdentifier: String(describing: SecretWordCollectionController.self))
-           
         return vc as! Self
        }
-    
-    private let reuseIdentifier = "SecretWordCellView"
-
-    @IBOutlet weak var collectionView: UICollectionView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.collectionView.register(UINib(nibName: "SecretWordCellView", bundle: nil), forCellWithReuseIdentifier: reuseIdentifier)
-
         self.collectionView.dragInteractionEnabled = true
-        
+        self.collectionView.contentInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+    
         // Do any additional setup after loading the view.
     }
 
@@ -38,18 +39,18 @@ class SecretWordCollectionController: UIViewController, StoryBoarded{
 
 // Protocol
 
-protocol OrderProtocol {
+protocol OrderWordProtocol {
     func reorder(collectionView: UICollectionView, _ destinationIndexPath: IndexPath,_ coordinator: UICollectionViewDropCoordinator)
 }
 
-extension SecretWordCollectionController: OrderProtocol{
+extension SecretWordCollectionController: OrderWordProtocol{
     func reorder(collectionView: UICollectionView, _ destinationIndexPath: IndexPath,_ coordinator: UICollectionViewDropCoordinator) {
         if let item = coordinator.items.first{
             if let sourceIndexPath = item.sourceIndexPath {
                 collectionView.performBatchUpdates({
-                    self.items.remove(at: sourceIndexPath.item)
+                    self.words.remove(at: sourceIndexPath.item)
                     if let localObject = item.dragItem.localObject{
-                        self.items.insert(localObject as! String, at: destinationIndexPath.item)
+                        self.words.insert(localObject as! String, at: destinationIndexPath.item)
                     }
                     collectionView.deleteItems(at: [sourceIndexPath])
                     collectionView.insertItems(at: [destinationIndexPath])
@@ -95,10 +96,11 @@ extension SecretWordCollectionController: UICollectionViewDragDelegate{
     
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem]{
     
-        let item = self.items[indexPath.row]
+        let item = self.words[indexPath.row]
         let itemProvider = NSItemProvider(item: item as NSSecureCoding, typeIdentifier: "iden")
         let dragItem = UIDragItem(itemProvider: itemProvider)
         dragItem.localObject = item
+        
         return [dragItem]
     }
     
@@ -117,34 +119,44 @@ extension SecretWordCollectionController : UICollectionViewDataSource{
 
         func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
            // #warning Incomplete implementation, return the number of items
-            return items.count
+            return words.count
        }
 
         func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath)
        
-            let item = items[indexPath.row]
+            let item = words[indexPath.row]
             
            // Configure the cell
-           if let secretCell = cell as? SecretWordCellView{
+           if let secretCell = cell as? SecretWordCellView {
+            /*
+             * Add Border
+             */
+            let layer = secretCell.layer
+            //TDOD: Refacto Getting Color Grena
+            if let colorGrena = secretCell.numberWordIncrementLabel.textColor {
+                layer.borderColor = colorGrena.cgColor
+            }
+            
+            layer.borderWidth = 2.0
+            layer.cornerRadius = 10.0
+            
             secretCell.secretWord = item
-            secretCell.imageName = item
+            secretCell.numberWordIncrement = "\(indexPath.item + 1)"
+            
             return secretCell
            }
        
            return cell
        }
+    
+    
 
 }
 
 
 // MARK: extension UICollectionViewDelegate
 extension SecretWordCollectionController: UICollectionViewDelegate{
-    
-    func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-        print("sourceIndexPath \(sourceIndexPath.row)")
-        print("destinationIndexPath \(destinationIndexPath.row)")
-    }
     
     func collectionView(_ collectionView: UICollectionView, canMoveItemAt indexPath: IndexPath) -> Bool {
         return true
@@ -183,22 +195,23 @@ extension SecretWordCollectionController: UICollectionViewDelegate{
 
 // MARK: extension UICollectionViewDelegateFlowLayout
 extension SecretWordCollectionController: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        sizeForItemAt indexPath: IndexPath) -> CGSize {
-            return CGSize(width: 184,height: 156)
-    }
 
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
+                        sizeForItemAt indexPath: IndexPath) -> CGSize {
+            return CGSize(width: 120,height: 110)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
                         minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 10.0
+        return 4.0
     }
 
     func collectionView(_ collectionView: UICollectionView, layout
         collectionViewLayout: UICollectionViewLayout,
                         minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 10.0
+        return 4.0
     }
 }
 

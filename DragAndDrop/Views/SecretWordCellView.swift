@@ -11,7 +11,7 @@ import UIKit
 class SecretWordCellView: UICollectionViewCell {
     
     @IBOutlet var secretWordLabel: UILabel!
-    @IBOutlet var imageView: UIImageView!
+    @IBOutlet var numberWordIncrementLabel: UILabel!
     
     var secretWord: String = ""{
         didSet{
@@ -19,9 +19,9 @@ class SecretWordCellView: UICollectionViewCell {
         }
     }
 
-    var imageName: String = ""{
+    var numberWordIncrement: String = ""{
         didSet{
-            updateImage()
+            updateNumber()
         }
     }
     
@@ -30,7 +30,7 @@ class SecretWordCellView: UICollectionViewCell {
     }
     
     
-    private func updateImage(){
-        self.imageView.image = UIImage(named: imageName)
+    private func updateNumber(){
+        self.numberWordIncrementLabel.text = numberWordIncrement
     }
 }
