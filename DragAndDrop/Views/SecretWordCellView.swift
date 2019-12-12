@@ -18,11 +18,15 @@ class SecretWordCellView: UICollectionViewCell {
             updateSecretWord()
         }
     }
-
-    var numberWordIncrement: String = ""{
+    
+    var numberWordIncrement: Int = 0{
         didSet{
             updateNumber()
         }
+    }
+    
+    override func awakeFromNib() {
+        makeBorder()
     }
     
     private func updateSecretWord(){
@@ -31,6 +35,21 @@ class SecretWordCellView: UICollectionViewCell {
     
     
     private func updateNumber(){
-        self.numberWordIncrementLabel.text = numberWordIncrement
+        
+        self.numberWordIncrementLabel.text = String(format:"%02d.",numberWordIncrement)
+    }
+    
+    
+    private func makeBorder(){
+   
+        let layer = self.layer
+        //TDOD: Refacto Getting Color Grena
+        if let colorGrena = self.numberWordIncrementLabel.textColor {
+            layer.borderColor = colorGrena.cgColor
+        }
+        
+        layer.borderWidth = 2.0
+        layer.cornerRadius = 10.0
+        
     }
 }
