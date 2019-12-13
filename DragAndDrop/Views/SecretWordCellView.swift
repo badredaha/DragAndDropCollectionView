@@ -35,7 +35,6 @@ class SecretWordCellView: UICollectionViewCell {
     
     
     private func updateNumber(){
-        
         self.numberWordIncrementLabel.text = String(format:"%02d.",numberWordIncrement)
     }
     
