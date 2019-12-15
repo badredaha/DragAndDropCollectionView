@@ -23,7 +23,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let window = UIWindow(windowScene: scene)
         
         // Instantiate From StoryBoard
-        let rootVC = SecretWordCollectionController.instantiate()
+        
+        let rootVC = SecretWordCollectionController()
         window.rootViewController = rootVC
         
         self.window = window

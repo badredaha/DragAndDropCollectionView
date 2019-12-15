@@ -8,28 +8,49 @@
 
 import UIKit
 
-class SecretWordCollectionController: UIViewController, StoryBoarded{
+class SecretWordCollectionController: UIViewController {
+    
+    lazy private var collectionView: UICollectionView = {
+        let collectionViewLayout = UICollectionViewFlowLayout()
+        //        layout.sectionInset = UIEdgeInsets(top: 20, left: 0, bottom: 10, right: 0)
+        collectionViewLayout.itemSize = CGSize(width: 110, height: 80)
+        collectionViewLayout.minimumLineSpacing = 10.0
+        
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
+        collectionView.backgroundColor = UIColor.white
+        
+        return collectionView
+    }()
     
     private let reuseIdentifier = "SecretWordCellView"
-    
-    @IBOutlet weak var collectionView: UICollectionView!
     
     private var words = ["Hello","Word2","AZERTY","BTC","Crypto","Money","Yes","Sure!","LOL","Secret"]
     
     
-    static func instantiate() -> Self {
-        let storyBoard = UIStoryboard(name: "Main", bundle: Bundle.main)
-        let vc = storyBoard.instantiateViewController(withIdentifier: String(describing: SecretWordCollectionController.self))
-        return vc as! Self
-    }
-    
     override func viewDidLoad() {
+        
         super.viewDidLoad()
         
-        self.collectionView.register(UINib(nibName: "SecretWordCellView", bundle: nil), forCellWithReuseIdentifier: reuseIdentifier)
+        //Add CollectionView
+        self.view.addSubview(self.collectionView)
+        
+        // Add Constraint
+        self.collectionView.translatesAutoresizingMaskIntoConstraints = false
+        self.collectionView.centerYAnchor.constraint(equalTo: self.view.centerYAnchor, constant: 0).isActive = true
+        self.collectionView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor, constant: 0).isActive = true
+        self.collectionView.widthAnchor.constraint(equalTo: self.view.widthAnchor,constant: 0).isActive = true
+        self.collectionView.heightAnchor.constraint(equalTo: self.view.heightAnchor,constant: 0).isActive = true
+        
+        
+        self.collectionView.register(SecretWordCellView.self, forCellWithReuseIdentifier: reuseIdentifier)
         
         self.collectionView.dragInteractionEnabled = true
         self.collectionView.contentInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        
+        self.collectionView.dragDelegate = self
+        self.collectionView.delegate = self
+        self.collectionView.dataSource = self
+        self.collectionView.dropDelegate = self
         
         // Do any additional setup after loading the view.
     }
@@ -96,8 +117,16 @@ extension SecretWordCollectionController: UICollectionViewDropDelegate {
         }
         
         if let indexPath = destinationIndexPath, coordinator.proposal.operation == .move {
+            
+            if let secretCellView = collectionView.cellForItem(at: indexPath) as? SecretWordCellView{
+                secretCellView.dragEnd()
+            }
+            
             self.reorder(collectionView: collectionView, indexPath, coordinator)
+
+            
         }
+
     }
     
 }
@@ -105,6 +134,10 @@ extension SecretWordCollectionController: UICollectionViewDropDelegate {
 extension SecretWordCollectionController: UICollectionViewDragDelegate{
     
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem]{
+        
+        if let secretCellView = collectionView.cellForItem(at: indexPath) as? SecretWordCellView{
+            secretCellView.dragBegin()
+        }
         
         let item = self.words[indexPath.row]
         let itemProvider = NSItemProvider(item: item as NSSecureCoding, typeIdentifier: "iden")
@@ -118,7 +151,7 @@ extension SecretWordCollectionController: UICollectionViewDragDelegate{
 
 
 // MARK: extension UICollectionViewDataSource
-extension SecretWordCollectionController : UICollectionViewDataSource{
+extension SecretWordCollectionController: UICollectionViewDataSource {
     // MARK: UICollectionViewDataSource
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -157,50 +190,4 @@ extension SecretWordCollectionController: UICollectionViewDelegate{
         return true
     }
     
-    
-    /*
-     // Uncomment this method to specify if the specified item should be highlighted during tracking
-     override func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
-     return true
-     }
-     */
-    
-    /*
-     // Uncomment this method to specify if the specified item should be selected
-     override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-     return true
-     }
-     */
-    
-    /*
-     // Uncomment these methods to specify if an action menu should be displayed for the specified item, and react to actions performed on the item
-     override func collectionView(_ collectionView: UICollectionView, shouldShowMenuForItemAt indexPath: IndexPath) -> Bool {
-     return false
-     }
-     
-     override func collectionView(_ collectionView: UICollectionView, canPerformAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) -> Bool {
-     return false
-     }
-     
-     override func collectionView(_ collectionView: UICollectionView, performAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) {
-     
-     }
-     */
 }
-
-// MARK: extension UICollectionViewDelegateFlowLayout
-extension SecretWordCollectionController: UICollectionViewDelegateFlowLayout {
-    
-    func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 110, height: 90)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout
-        collectionViewLayout: UICollectionViewLayout,
-                        minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 10.0
-    }
-}
-
