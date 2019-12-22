@@ -7,8 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B228658C23ACBBB100B3C9F7 /* View-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B228658B23ACBBB100B3C9F7 /* View-Extension.swift */; };
 		B286178C239EB24700332062 /* SecretWordCollectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B286178B239EB24700332062 /* SecretWordCollectionController.swift */; };
+		B28820F523AFF9B600487AC7 /* CustomInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28820F423AFF9B600487AC7 /* CustomInputView.swift */; };
+		B28820F723B026BC00487AC7 /* ServiceSecretWord.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28820F623B026BC00487AC7 /* ServiceSecretWord.swift */; };
 		B29BD08D23A599360068C9D9 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29BD08C23A599360068C9D9 /* Color.swift */; };
+		B2C43B9D23AB73F500C9595C /* FontApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C43B9C23AB73F500C9595C /* FontApp.swift */; };
 		B2E16BA8239C5F5C007122E5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E16BA7239C5F5C007122E5 /* AppDelegate.swift */; };
 		B2E16BAA239C5F5C007122E5 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E16BA9239C5F5C007122E5 /* SceneDelegate.swift */; };
 		B2E16BB1239C5F5E007122E5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B2E16BB0239C5F5E007122E5 /* Assets.xcassets */; };
@@ -28,8 +32,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		B228658B23ACBBB100B3C9F7 /* View-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View-Extension.swift"; sourceTree = "<group>"; };
 		B286178B239EB24700332062 /* SecretWordCollectionController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecretWordCollectionController.swift; sourceTree = "<group>"; };
+		B28820F423AFF9B600487AC7 /* CustomInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomInputView.swift; sourceTree = "<group>"; };
+		B28820F623B026BC00487AC7 /* ServiceSecretWord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceSecretWord.swift; sourceTree = "<group>"; };
 		B29BD08C23A599360068C9D9 /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
+		B2C43B9C23AB73F500C9595C /* FontApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontApp.swift; sourceTree = "<group>"; };
 		B2E16BA4239C5F5C007122E5 /* DragAndDrop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DragAndDrop.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B2E16BA7239C5F5C007122E5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B2E16BA9239C5F5C007122E5 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -64,6 +72,7 @@
 			isa = PBXGroup;
 			children = (
 				B2861788239EB1CB00332062 /* UI */,
+				B2C43B9C23AB73F500C9595C /* FontApp.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -72,8 +81,17 @@
 			isa = PBXGroup;
 			children = (
 				B29BD08C23A599360068C9D9 /* Color.swift */,
+				B228658B23ACBBB100B3C9F7 /* View-Extension.swift */,
 			);
 			path = UI;
+			sourceTree = "<group>";
+		};
+		B28820F123AEDC7F00487AC7 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				B28820F623B026BC00487AC7 /* ServiceSecretWord.swift */,
+			);
+			path = Services;
 			sourceTree = "<group>";
 		};
 		B2E16B9B239C5F5C007122E5 = {
@@ -97,6 +115,7 @@
 		B2E16BA6239C5F5C007122E5 /* DragAndDrop */ = {
 			isa = PBXGroup;
 			children = (
+				B28820F123AEDC7F00487AC7 /* Services */,
 				B2861787239EB1C300332062 /* Protocols */,
 				B2E16BCE239C6A73007122E5 /* Views */,
 				B2E16BCD239C6A6A007122E5 /* Controllers */,
@@ -130,6 +149,7 @@
 			isa = PBXGroup;
 			children = (
 				B2E16BCF239C6AD3007122E5 /* SecretWordCellView.swift */,
+				B28820F423AFF9B600487AC7 /* CustomInputView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -235,9 +255,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				B286178C239EB24700332062 /* SecretWordCollectionController.swift in Sources */,
+				B28820F523AFF9B600487AC7 /* CustomInputView.swift in Sources */,
 				B2E16BD0239C6AD3007122E5 /* SecretWordCellView.swift in Sources */,
 				B2E16BA8239C5F5C007122E5 /* AppDelegate.swift in Sources */,
 				B2E16BAA239C5F5C007122E5 /* SceneDelegate.swift in Sources */,
+				B2C43B9D23AB73F500C9595C /* FontApp.swift in Sources */,
+				B228658C23ACBBB100B3C9F7 /* View-Extension.swift in Sources */,
+				B28820F723B026BC00487AC7 /* ServiceSecretWord.swift in Sources */,
 				B29BD08D23A599360068C9D9 /* Color.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
