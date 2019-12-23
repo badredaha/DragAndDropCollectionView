@@ -47,6 +47,7 @@ class CustomInputView: UIView{
     @objc private func didClickNextButton(_ sender: Any?){
         if let txt = self.txtField.text, !txt.isEmpty, !txt.trimmingCharacters(in: .whitespaces).isEmpty{
             self.didClick?(txt)
+            self.txtField.text = ""
         }
     }
     
