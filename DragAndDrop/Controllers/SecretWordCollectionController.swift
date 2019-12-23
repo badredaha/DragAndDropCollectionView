@@ -196,14 +196,16 @@ extension SecretWordCollectionController: UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize{
 
         if self.sericeSecretWord.isNewWord(at: indexPath.item){
-            return CGSize(width: 110, height: 110)
+            return CGSize(width: 124, height: 110)
         }
-        return CGSize(width: 110, height: 80)
+        return CGSize(width: 124, height: 70)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 10.0
     }
+    
+  
 }
 
 // MARK: extension SecretWordCellViewWordSecretDelegate
