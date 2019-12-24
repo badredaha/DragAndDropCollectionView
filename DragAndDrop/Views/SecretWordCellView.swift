@@ -10,8 +10,9 @@ import UIKit
 
 struct CellViewColorItem {
     static let RED_LIGHT =  UIColor.hexaToUIColor(hexa:"FFCCCC")
-    static let BORDEAUX =  UIColor.hexaToUIColor(hexa: "660033")
+    static let BORDEAUX =  UIColor.hexaToUIColor(hexa: "b30059")
     static let GRAY = UIColor.hexaToUIColor(hexa: "666666")
+    static let LIGHT_GRAY = UIColor.hexaToUIColor(hexa: "#E9E9E9")
     static let RED_BORDEAUX = UIColor.hexaToUIColor(hexa: "990000")
 
 }
@@ -30,6 +31,10 @@ protocol SecretWordCellViewProtocol{
 }
 
 class SecretWordCellView: UICollectionViewCell {
+    
+    private let HEIGHT_INCREMENT_VIEW: CGFloat = 25
+    
+    var incrementViewHeightAnchor: NSLayoutConstraint?
     
     var delegate: SecretWordCellViewWordSecretDelegate?
     var indexPath: IndexPath = IndexPath()
@@ -105,12 +110,31 @@ class SecretWordCellView: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         self.secretWordLabel.text = nil
-        self.numberWordIncrementLabel.text = nil
+        
         self.toogleRedBorder(show: false)
         self.backgroundColor = .white
         self.secretWordLabel.textColor = CellViewColorItem.GRAY
-        self.containerIncrementView.isHidden = false
+        
         self.dotimageView.image = UIImage(named: "dot")
+        self.resetIncrementView()
+    }
+    
+    private func showIncrementView(_ show: Bool){
+        
+        if show{
+            self.incrementViewHeightAnchor?.constant = HEIGHT_INCREMENT_VIEW
+        }else{
+            self.incrementViewHeightAnchor?.constant = 0
+        }
+        
+        self.layoutIfNeeded()
+    }
+    
+    private func resetIncrementView(){
+        self.incrementViewHeightAnchor?.constant = HEIGHT_INCREMENT_VIEW
+        self.numberWordIncrementLabel.text = nil
+        self.numberWordIncrementLabel.textColor = CellViewColorItem.BORDEAUX
+        self.containerIncrementView.backgroundColor = CellViewColorItem.RED_LIGHT
     }
     
     private func updateSecretWord(){
@@ -122,7 +146,8 @@ class SecretWordCellView: UICollectionViewCell {
     }
     
     private func setupCellView(){
-        
+        self.clipsToBounds = true
+        self.contentView.clipsToBounds = true
         self.backgroundColor = UIColor.white
         // setup View Increment
         addViewForIncrementWord()
@@ -131,6 +156,24 @@ class SecretWordCellView: UICollectionViewCell {
         // Setup Dot ImageView
         addDotImageView()
     }
+    
+    func setupForNewWord(){
+        
+        toogleRedBorder(show: true, CellViewColorItem.BORDEAUX)
+        
+        self.numberWordIncrementLabel.textColor = CellViewColorItem.GRAY
+        self.containerIncrementView.backgroundColor = CellViewColorItem.LIGHT_GRAY
+        
+        self.incrementViewHeightAnchor?.isActive = true
+        self.incrementViewHeightAnchor?.constant = HEIGHT_INCREMENT_VIEW * 2
+        
+        UIView.animate(withDuration: 0.5, delay: 0,usingSpringWithDamping: 1, initialSpringVelocity: 1,options: .curveEaseIn,animations: {
+            
+            self.layoutIfNeeded()
+            
+        })
+        
+      }
     
     private func addViewForIncrementWord(){
         
@@ -141,12 +184,13 @@ class SecretWordCellView: UICollectionViewCell {
         
         // Setup Constraint For View Container And UILabel Increment Word
         
+        self.incrementViewHeightAnchor = self.containerIncrementView.heightAnchor.constraint(equalToConstant: HEIGHT_INCREMENT_VIEW)
+        self.incrementViewHeightAnchor?.isActive = true
+        
         NSLayoutConstraint.activate([
             self.containerIncrementView.leftAnchor.constraint(equalTo: leftAnchor, constant: 10),
             self.containerIncrementView.topAnchor.constraint(equalTo: topAnchor, constant: 0),
             self.containerIncrementView.widthAnchor.constraint(equalToConstant: 23),
-            self.containerIncrementView.heightAnchor.constraint(equalToConstant: 25),
-            
             self.numberWordIncrementLabel.leftAnchor.constraint(equalTo: containerIncrementView.leftAnchor, constant: 2),
             self.numberWordIncrementLabel.rightAnchor.constraint(equalTo: containerIncrementView.rightAnchor, constant: 0),
             self.numberWordIncrementLabel.bottomAnchor.constraint(equalTo: containerIncrementView.bottomAnchor, constant: -2)
@@ -198,7 +242,7 @@ extension SecretWordCellView: SecretWordCellViewProtocol{
         // add Anchor Height
         self.frame.size = CGSize(width: self.frame.width, height: self.frame.size.height/2)
         self.frame.origin = CGPoint(x: self.frame.origin.x, y: self.frame.origin.y+10)
-        self.containerIncrementView.isHidden = true
+        self.showIncrementView(false)
     }
     
     func dragEnd(){
@@ -207,7 +251,7 @@ extension SecretWordCellView: SecretWordCellViewProtocol{
         self.secretWordLabel.textColor = CellViewColorItem.GRAY
         self.dotimageView.image = UIImage(named: "dot")
         self.secretWordLabel.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor, constant: -5).isActive = true
-        self.containerIncrementView.isHidden = false
+        self.showIncrementView(true)
     }
     
 }
