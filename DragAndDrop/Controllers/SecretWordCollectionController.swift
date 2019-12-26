@@ -181,7 +181,6 @@ extension SecretWordCollectionController: UICollectionViewDragDelegate{
 
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem]{
         
-        let canDrag = self.sericeSecretWord.words[indexPath.item]
         if let secretCellView = collectionView.cellForItem(at: indexPath) as? SecretWordCellView, !session.hasItemsConforming(toTypeIdentifiers: ["iden"]){
             
             secretCellView.dragBegin()

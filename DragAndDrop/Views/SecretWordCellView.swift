@@ -64,7 +64,7 @@ class SecretWordCellView: UICollectionViewCell {
     let numberWordIncrementLabel: UILabel = {
         let label = UILabel()
         label.textColor = CellViewColorItem.BORDEAUX
-        label.font = FontApp.fontForInputText(withSize: 14)
+        label.font = UIFont.fontForInputText(withSize: 14)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -72,7 +72,7 @@ class SecretWordCellView: UICollectionViewCell {
     let secretWordLabel: UILabel = {
         let secretTxt = UILabel()
         secretTxt.textColor = CellViewColorItem.GRAY
-        secretTxt.font = FontApp.fontForInputText(withSize: 16)
+        secretTxt.font = UIFont.fontForInputText(withSize: 16)
         secretTxt.isUserInteractionEnabled = true
         secretTxt.translatesAutoresizingMaskIntoConstraints = false
         return secretTxt

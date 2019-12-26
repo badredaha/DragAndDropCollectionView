@@ -25,7 +25,7 @@ class CustomInputView: UIView{
     }
     private func addButtonNext(){
         buttonNext.setTitleColor(.white, for: .normal)
-        buttonNext.titleLabel?.font = FontApp.fontForInputText(withSize: 18)
+        buttonNext.titleLabel?.font = UIFont.fontForInputText(withSize: 18)
         buttonNext.backgroundColor = .black
         buttonNext.setTitle("Next", for: .normal)
         buttonNext.roundCorners(corners: [Corners.right], radius: 6)
@@ -55,7 +55,7 @@ class CustomInputView: UIView{
         txtField.roundCorners(corners: [Corners.left], radius: 6)
         txtField.textColor = .black
         txtField.returnKeyType = .continue
-        txtField.font = FontApp.fontForInputText(withSize: 18)
+        txtField.font = UIFont.fontForInputText(withSize: 18)
         txtField.backgroundColor = .white
         txtField.makeShadow()
         txtField.returnKeyType = .done

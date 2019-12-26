@@ -8,7 +8,7 @@
 
 import UIKit
 
-struct FontApp {
+extension UIFont {
     
     static func fontForInputText(fontName: String = "HelveticaNeue-Medium", withSize: CGFloat) -> UIFont{
         return UIFont(name: fontName, size:withSize) ?? UIFont.systemFont(ofSize: withSize)
