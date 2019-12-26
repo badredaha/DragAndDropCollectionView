@@ -89,7 +89,8 @@
             
             let testWord1 = "test1"
             sut?.addNewWord(testWord1)
-            XCTAssertEqual(mockDelegate.incrementOfCallCanWriteNewWord, 1)
+
+            expect(expectation:mockDelegate.incrementOfCallCanWriteNewWord, result: 1)            
         }
     
         func test_add_new_word_must_call_can_write_new_word_delegate_twice() {
@@ -101,7 +102,8 @@
             let testWord2 = "test2"
             sut?.addNewWord(testWord1)
             sut?.addNewWord(testWord2)
-            XCTAssertEqual(mockDelegate.incrementOfCallCanWriteNewWord, 2)
+            
+            expect(expectation: mockDelegate.incrementOfCallCanWriteNewWord, result: 2)
         }
         
         func test_add_new_word_must_call_can_write_new_word_and_not_maxWord_delegate() {
@@ -110,7 +112,8 @@
             
             let testWord1 = "test1"
             sut?.addNewWord(testWord1)
-            XCTAssertEqual(mockDelegate.incrementOfCallMaxWordsAuthorized, 0)
+    
+            expect(expectation: mockDelegate.incrementOfCallMaxWordsAuthorized, result: 0)
         }
         
         func test_add_new_word_must_call_maxWord_delegate_and_not_can_write_new_word() {
@@ -122,8 +125,13 @@
             words.forEach { (s) in
                 sut?.addNewWord(s)
             }
-            
-            XCTAssertEqual(mockDelegate.incrementOfCallMaxWordsAuthorized, 1)
+                    
+            expect(expectation: mockDelegate.incrementOfCallMaxWordsAuthorized, result: 1)
+        }
+        
+        
+        private func expect(expectation: Int,result: Int, file: StaticString = #file, line: UInt=#line){
+            XCTAssert(expectation == result,file: file,line: line)
         }
     }
     
