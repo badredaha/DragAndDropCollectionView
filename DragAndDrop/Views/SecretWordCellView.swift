@@ -127,7 +127,9 @@ class SecretWordCellView: UICollectionViewCell {
             self.incrementViewHeightAnchor?.constant = 0
         }
         
-        self.layoutIfNeeded()
+        UIView.animate(withDuration: 0.1, delay: 0,usingSpringWithDamping: 1, initialSpringVelocity: 1,options: .showHideTransitionViews,animations: {
+            self.layoutIfNeeded()
+        })
     }
     
     private func resetIncrementView(){
@@ -227,13 +229,6 @@ class SecretWordCellView: UICollectionViewCell {
 //MARK: SecretWordCellViewProtocol
 extension SecretWordCellView: SecretWordCellViewProtocol{
     
-    func isSecretWordIsPlaceHolder() -> Bool {
-        if let word = self.secretWordLabel.text, word == "_"{
-            return true
-        }
-        return false
-    }
-    
     func dragBegin(){
         self.toogleRedBorder(show: true,CellViewColorItem.BORDEAUX)
         self.backgroundColor = CellViewColorItem.RED_BORDEAUX
@@ -241,7 +236,10 @@ extension SecretWordCellView: SecretWordCellViewProtocol{
         self.dotimageView.image = UIImage(named: "dot_white")
         // add Anchor Height
         self.frame.size = CGSize(width: self.frame.width, height: self.frame.size.height/2)
-        self.frame.origin = CGPoint(x: self.frame.origin.x, y: self.frame.origin.y+10)
+        self.frame.origin = CGPoint(x: self.frame.origin.x, y: self.frame.origin.y+8)
+        UIView.animate(withDuration: 0.2) {
+            self.setNeedsLayout()
+        }
         self.showIncrementView(false)
     }
     
