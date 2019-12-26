@@ -10,13 +10,17 @@ import UIKit
 
 
 class SecretWordCollectionController: UIViewController {
-        
+    
+    var txtField: UITextField? = nil
+    
+    private let reuseIdentifier = "SecretWordCellView"
+    
+    private var sericeSecretWord = ServiceSecretWord()
+    
     lazy private var collectionView: UICollectionView = {
         let collectionViewLayout = UICollectionViewFlowLayout()
-        //        layout.sectionInset = UIEdgeInsets(top: 20, left: 0, bottom: 10, right: 0)
-        collectionViewLayout.itemSize = CGSize(width: 110, height: 80)
-        collectionViewLayout.minimumLineSpacing = 10.0
-        
+        collectionViewLayout.scrollDirection = .vertical
+        collectionViewLayout.sectionInset = UIEdgeInsets(top: 20, left: 0, bottom: 10, right: 0)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
         collectionView.backgroundColor = UIColor.hexaToUIColor(hexa: "#fafafa")
         collectionView.backgroundView?.isOpaque = false
@@ -24,16 +28,31 @@ class SecretWordCollectionController: UIViewController {
         return collectionView
     }()
     
-    private let reuseIdentifier = "SecretWordCellView"
+
     
-    private var sericeSecretWord = ServiceSecretWord()
     
+    convenience init() {
+        self.init(nibName: nil, bundle:nil)
+     }
+     
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+     required init?(coder: NSCoder) {
+         fatalError("init(coder:) has not been implemented")
+     }
+    
+
     override func viewDidLoad() {
         
         super.viewDidLoad()
         
         //Add CollectionView
         self.view.addSubview(self.collectionView)
+        
+        self.collectionView.dragInteractionEnabled = true
+        self.collectionView.register(SecretWordCellView.self, forCellWithReuseIdentifier: reuseIdentifier)
         
         // Add Constraint
         self.collectionView.translatesAutoresizingMaskIntoConstraints = false
@@ -43,37 +62,49 @@ class SecretWordCollectionController: UIViewController {
         self.collectionView.heightAnchor.constraint(equalTo: self.view.heightAnchor,constant: 0).isActive = true
         
         
-        self.collectionView.register(SecretWordCellView.self, forCellWithReuseIdentifier: reuseIdentifier)
-        
-        self.collectionView.dragInteractionEnabled = true
         self.collectionView.contentInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         
-        self.collectionView.dragDelegate = self
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
-        self.collectionView.dropDelegate = self
+        
+        addDragDelegate()
+        
+        //add Delegate to SecretWordService
+        self.sericeSecretWord.delegate = self
         
         // Do any additional setup after loading the view.
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        let txtField = simulateUITextField()
-        self.view.addSubview(txtField)
-        txtField.becomeFirstResponder()
+        self.txtField = simulateUITextField()
+        if let txt = self.txtField{
+            self.view.addSubview(txt)
+            txt.becomeFirstResponder()
+        }
     }
-    private func reloadCollectionViewWithoutAnimation(){
-        
+    
+    private func addDragDelegate(){
+    //set delegate
+        self.collectionView.dragInteractionEnabled = true
+        self.collectionView.dragDelegate = self
+        self.collectionView.dropDelegate = self
+    }
+    
+    private func resetDragDelegate(){
+       //set delegate
+           self.collectionView.dragInteractionEnabled = false
+           self.collectionView.dragDelegate = nil
+           self.collectionView.dropDelegate = nil
+       }
+    
+    private func reloadCollectionViewWithoutAnimation() {
         //TODO Refacto Section 0 because min Section will be 1 Section
-        
-            self.collectionView.performBatchUpdates({
             collectionView.reloadSections(IndexSet(arrayLiteral: 0))
-            }, completion: nil)
     }
 }
 
 // Protocol
-
 protocol OrderWordProtocol {
     func reorder(collectionView: UICollectionView, _ destinationIndexPath: IndexPath,_ coordinator: UICollectionViewDropCoordinator)
 }
@@ -91,11 +122,16 @@ extension SecretWordCollectionController: OrderWordProtocol{
                     }
                     collectionView.deleteItems(at: [sourceIndexPath])
                     collectionView.insertItems(at: [destinationIndexPath])
-                }) { (finish) in
+                }){ (finish) in
+                    DispatchQueue.main.async {
                     self.reloadCollectionViewWithoutAnimation()
+                    }
+                    
                 }
                 coordinator.drop(item.dragItem, toItemAt: destinationIndexPath)
             }
+        
+             
         }
     }
     
@@ -115,21 +151,17 @@ extension SecretWordCollectionController: UICollectionViewDropDelegate {
     }
     
     func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator){
+        let destinationIndexPath = coordinator.destinationIndexPath ?? IndexPath(item: 0, section: 0)
         
-        var destinationIndexPath = coordinator.destinationIndexPath
-        
-        if destinationIndexPath == nil {
-            let row = collectionView.numberOfItems(inSection:0)
-            destinationIndexPath = IndexPath(item: row - 1, section: 0)
-        }
-        
-        if let indexPath = destinationIndexPath, coordinator.proposal.operation == .move {
-            if let secretCellView = collectionView.cellForItem(at: indexPath) as? SecretWordCellView{
-                secretCellView.dragEnd()
-            }
+        switch coordinator.proposal.operation {
+               case .move:
             
-            self.reorder(collectionView: collectionView, indexPath, coordinator)
+                self.reorder(collectionView: collectionView, destinationIndexPath, coordinator)
+            
+               default: return
+            
         }
+        
     }
     
 }
@@ -137,19 +169,32 @@ extension SecretWordCollectionController: UICollectionViewDropDelegate {
 // MARK: extension UICollectionViewDragDelegate
 extension SecretWordCollectionController: UICollectionViewDragDelegate{
     
+    
+    func collectionView(_ collectionView: UICollectionView, dragPreviewParametersForItemAt indexPath: IndexPath) -> UIDragPreviewParameters? {
+        return UIDragPreviewParameters()
+    }
+    func collectionView(_ collectionView: UICollectionView, dragSessionDidEnd session: UIDragSession) {
+        self.collectionView.reloadData()
+    }
+    
+    
+
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem]{
         
-        let word = self.sericeSecretWord.words[indexPath.item]
-        if word != "_", indexPath.item > 1, let secretCellView = collectionView.cellForItem(at: indexPath) as? SecretWordCellView{
+        let canDrag = self.sericeSecretWord.words[indexPath.item]
+        if let secretCellView = collectionView.cellForItem(at: indexPath) as? SecretWordCellView, !session.hasItemsConforming(toTypeIdentifiers: ["iden"]){
+            
             secretCellView.dragBegin()
+            
+            let item = self.sericeSecretWord.words[indexPath.row]
+                   let itemProvider = NSItemProvider(item: item as NSSecureCoding, typeIdentifier: "iden")
+                   let dragItem = UIDragItem(itemProvider: itemProvider)
+                   dragItem.localObject = item
+                   return [dragItem]
         }
         
-        let item = self.sericeSecretWord.words[indexPath.row]
-        let itemProvider = NSItemProvider(item: item as NSSecureCoding, typeIdentifier: "iden")
-        let dragItem = UIDragItem(itemProvider: itemProvider)
-        dragItem.localObject = item
-        
-        return [dragItem]
+        return []
+       
     }
     
 }
@@ -158,6 +203,14 @@ extension SecretWordCollectionController: UICollectionViewDragDelegate{
 // MARK: extension UICollectionViewDataSource
 extension SecretWordCollectionController: UICollectionViewDataSource {
     // MARK: UICollectionViewDataSource
+    
+    func dragStateDidChange(_ dragState: UICollectionViewCell.DragState){
+        print("eerer")
+    }
+
+    func collectionView(_ collectionView: UICollectionView, dragSessionWillBegin session: UIDragSession) {
+        
+    }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
@@ -180,7 +233,7 @@ extension SecretWordCollectionController: UICollectionViewDataSource {
             secretCell.secretWord = item
             secretCell.numberWordIncrement = indexPath.item + 1
             if sericeSecretWord.isNewWord(at: indexPath.item) {
-                secretCell.toogleRedBorder(show: true, CellViewColorItem.BORDEAUX)
+                secretCell.setupForNewWord()
             }
             
             return secretCell
@@ -196,12 +249,16 @@ extension SecretWordCollectionController: UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize{
 
         if self.sericeSecretWord.isNewWord(at: indexPath.item){
-            return CGSize(width: 124, height: 110)
+            return CGSize(width: 110, height: 120)
         }
-        return CGSize(width: 124, height: 70)
+        return CGSize(width: 110, height: 70)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 10.0
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 10.0
     }
     
@@ -219,9 +276,16 @@ extension SecretWordCollectionController: SecretWordCellViewWordSecretDelegate{
 extension SecretWordCollectionController{
     
     private func simulateUITextField() -> UITextField{
+        
+        if let txtField = txtField{
+            return txtField
+        }
+        
         let txtField = UITextField()
         txtField.inputAccessoryView = keyboardInputView()
+        
         return txtField
+        
     }
     
     private func keyboardInputView() -> UIView{
@@ -238,4 +302,14 @@ extension SecretWordCollectionController{
         return true
     }
     
+}
+
+extension SecretWordCollectionController: ServiceSecretWordDelegate{
+    func maxWordsAuthorized() {
+        print("maxWordsAuthorized")
+    }
+    
+    func canWriteNewWord() {
+        print("canWriteNewWord")
+    }
 }
