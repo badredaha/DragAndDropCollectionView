@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B203EE0923B4C3E5006301BD /* ServiceSecretWordTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B203EE0823B4C3E5006301BD /* ServiceSecretWordTests.swift */; };
 		B228658C23ACBBB100B3C9F7 /* View-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B228658B23ACBBB100B3C9F7 /* View-Extension.swift */; };
 		B286178C239EB24700332062 /* SecretWordCollectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B286178B239EB24700332062 /* SecretWordCollectionController.swift */; };
 		B28820F523AFF9B600487AC7 /* CustomInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28820F423AFF9B600487AC7 /* CustomInputView.swift */; };
@@ -14,10 +15,8 @@
 		B29BD08D23A599360068C9D9 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29BD08C23A599360068C9D9 /* Color.swift */; };
 		B2C43B9D23AB73F500C9595C /* FontApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C43B9C23AB73F500C9595C /* FontApp.swift */; };
 		B2E16BA8239C5F5C007122E5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E16BA7239C5F5C007122E5 /* AppDelegate.swift */; };
-		B2E16BAA239C5F5C007122E5 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E16BA9239C5F5C007122E5 /* SceneDelegate.swift */; };
 		B2E16BB1239C5F5E007122E5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B2E16BB0239C5F5E007122E5 /* Assets.xcassets */; };
 		B2E16BB4239C5F5E007122E5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B2E16BB2239C5F5E007122E5 /* LaunchScreen.storyboard */; };
-		B2E16BBF239C5F5E007122E5 /* DragAndDropTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E16BBE239C5F5E007122E5 /* DragAndDropTests.swift */; };
 		B2E16BD0239C6AD3007122E5 /* SecretWordCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E16BCF239C6AD3007122E5 /* SecretWordCellView.swift */; };
 /* End PBXBuildFile section */
 
@@ -32,6 +31,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		B203EE0823B4C3E5006301BD /* ServiceSecretWordTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceSecretWordTests.swift; sourceTree = "<group>"; };
 		B228658B23ACBBB100B3C9F7 /* View-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View-Extension.swift"; sourceTree = "<group>"; };
 		B286178B239EB24700332062 /* SecretWordCollectionController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecretWordCollectionController.swift; sourceTree = "<group>"; };
 		B28820F423AFF9B600487AC7 /* CustomInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomInputView.swift; sourceTree = "<group>"; };
@@ -40,12 +40,10 @@
 		B2C43B9C23AB73F500C9595C /* FontApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontApp.swift; sourceTree = "<group>"; };
 		B2E16BA4239C5F5C007122E5 /* DragAndDrop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DragAndDrop.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B2E16BA7239C5F5C007122E5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		B2E16BA9239C5F5C007122E5 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		B2E16BB0239C5F5E007122E5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B2E16BB3239C5F5E007122E5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B2E16BB5239C5F5E007122E5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B2E16BBA239C5F5E007122E5 /* DragAndDropTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DragAndDropTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		B2E16BBE239C5F5E007122E5 /* DragAndDropTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragAndDropTests.swift; sourceTree = "<group>"; };
 		B2E16BC0239C5F5E007122E5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B2E16BCF239C6AD3007122E5 /* SecretWordCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecretWordCellView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -120,7 +118,6 @@
 				B2E16BCE239C6A73007122E5 /* Views */,
 				B2E16BCD239C6A6A007122E5 /* Controllers */,
 				B2E16BA7239C5F5C007122E5 /* AppDelegate.swift */,
-				B2E16BA9239C5F5C007122E5 /* SceneDelegate.swift */,
 				B2E16BB0239C5F5E007122E5 /* Assets.xcassets */,
 				B2E16BB2239C5F5E007122E5 /* LaunchScreen.storyboard */,
 				B2E16BB5239C5F5E007122E5 /* Info.plist */,
@@ -131,7 +128,7 @@
 		B2E16BBD239C5F5E007122E5 /* DragAndDropTests */ = {
 			isa = PBXGroup;
 			children = (
-				B2E16BBE239C5F5E007122E5 /* DragAndDropTests.swift */,
+				B203EE0823B4C3E5006301BD /* ServiceSecretWordTests.swift */,
 				B2E16BC0239C5F5E007122E5 /* Info.plist */,
 			);
 			path = DragAndDropTests;
@@ -258,7 +255,6 @@
 				B28820F523AFF9B600487AC7 /* CustomInputView.swift in Sources */,
 				B2E16BD0239C6AD3007122E5 /* SecretWordCellView.swift in Sources */,
 				B2E16BA8239C5F5C007122E5 /* AppDelegate.swift in Sources */,
-				B2E16BAA239C5F5C007122E5 /* SceneDelegate.swift in Sources */,
 				B2C43B9D23AB73F500C9595C /* FontApp.swift in Sources */,
 				B228658C23ACBBB100B3C9F7 /* View-Extension.swift in Sources */,
 				B28820F723B026BC00487AC7 /* ServiceSecretWord.swift in Sources */,
@@ -270,7 +266,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B2E16BBF239C5F5E007122E5 /* DragAndDropTests.swift in Sources */,
+				B203EE0923B4C3E5006301BD /* ServiceSecretWordTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -346,7 +342,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -400,7 +396,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;

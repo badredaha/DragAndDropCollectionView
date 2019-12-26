@@ -8,22 +8,47 @@
 
 import Foundation
 
+
+protocol ServiceSecretWordDelegate{
+    func maxWordsAuthorized()
+    func canWriteNewWord()
+}
+
 class ServiceSecretWord{
+    var maxWordAuthorized :Int {
+        get {
+            return 12
+        }
+    }
+    var delegate:ServiceSecretWordDelegate?
     
+    init(delegate:ServiceSecretWordDelegate? = nil) {
+        self.delegate = delegate
+    }
+    
+    //var words = ["🍎","💨","🥑","🍅","🥓","🍮","🏀","🥋","🏋🏻‍♀️","🏂"]
     var words = ["_"]
     
     func isNewWord(at index: Int) -> Bool{
-         if self.words.count > index, self.words[index] == "_" {
+        if self.words.last == "_" {
              return true
          }
          return false
-     }
+    }
     
     func addNewWord(_ newWord: String){
         if let index = self.words.firstIndex(of: "_"){
             self.words.remove(at: index)
             self.words.insert(newWord, at: index)
-            self.words.append("_")
+            if self.words.count < self.maxWordAuthorized {
+                self.words.append("_")
+                self.delegate?.canWriteNewWord()
+            }else{
+                self.delegate?.maxWordsAuthorized()
+            }
+            
+        }else{
+            self.delegate?.maxWordsAuthorized()
         }
     }
     
