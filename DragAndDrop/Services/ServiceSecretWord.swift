@@ -29,11 +29,22 @@ class ServiceSecretWord{
     //var words = ["🍎","💨","🥑","🍅","🥓","🍮","🏀","🥋","🏋🏻‍♀️","🏂"]
     var words = ["_"]
     
-    func isNewWord(at index: Int) -> Bool{
+    func isPlaceHolderPresentAtEnd() -> Bool{
         if self.words.last == "_" {
              return true
          }
          return false
+    }
+    
+    func isMaxWordAchieved() -> Bool{
+        return self.words.count == self.maxWordAuthorized
+    }
+    
+    func isWordPlaceHorlder(at index: Int) -> Bool{
+        if self.words.count > index, self.words[index] == "_" {
+            return true
+        }
+        return false
     }
     
     func addNewWord(_ newWord: String){
