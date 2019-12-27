@@ -14,10 +14,17 @@ protocol ServiceSecretWordDelegate{
     func canWriteNewWord()
 }
 
-class ServiceSecretWord{
+class ServiceSecretWord {
+    
     var maxWordAuthorized :Int {
         get {
             return 12
+        }
+    }
+    
+    var canEditWord: Bool{
+        get{
+            return self.words.count == maxWordAuthorized
         }
     }
     var delegate:ServiceSecretWordDelegate?
@@ -26,8 +33,8 @@ class ServiceSecretWord{
         self.delegate = delegate
     }
     
-    var words = ["🍎","💨","🥑","🍅","🥓","🍮","🏀","🥋","🏋🏻‍♀️","🏂","👩🏻‍💻","🌂"]
-    //var words = ["_"]
+    //var words = ["🍎","💨","🥑","🍅","🥓","🍮","🏀","🥋","🏋🏻‍♀️","🏂","👩🏻‍💻","🌂"]
+    var words = ["_"]
     
     func isPlaceHolderPresentAtEnd() -> Bool{
         if self.words.last == "_" {
@@ -61,6 +68,15 @@ class ServiceSecretWord{
         }else{
             self.delegate?.maxWordsAuthorized()
         }
+    }
+    
+    func editWord(index atIndex: Int, word: String) {
+        guard canEditWord else {
+            return
+        }
+        
+        self.words.remove(at: atIndex)
+        self.words.insert(word, at: atIndex)
     }
     
 }

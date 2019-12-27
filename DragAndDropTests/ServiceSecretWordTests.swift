@@ -69,6 +69,33 @@
             XCTAssertEqual(sut?.words[1],testWord2,"add new word in note good place")
         }
         
+        
+        
+        func test_can_edit_word() {
+            let testWord1 = "test1"
+            
+            sut?.addNewWord(testWord1)
+            
+            let editingText = "test3"
+            
+            sut?.editWord(index: 0, word: editingText)
+            
+            XCTAssertEqual(sut?.words[0],testWord1,"can't edit -> words must be max words")
+        }
+        
+        func test_add_edit_word_at_index() {
+            
+            let words  = HelperServiceSecretWord.makeMaxWordsForSut()
+            sut?.words = words
+            
+            let expectedEditingText = "test3"
+            
+            sut?.editWord(index: 0, word: expectedEditingText)
+            
+            XCTAssertEqual(sut?.words[0],expectedEditingText,"edit new word msut replace old word")
+            XCTAssert(sut?.words[1] != expectedEditingText,"edit word at specific index musn't not change other word")
+        }
+        
         func test_max_words_must_be_twelve() {
             XCTAssertEqual(sut?.maxWordAuthorized, 12, "Max words must to be 12 ! ")
         }
