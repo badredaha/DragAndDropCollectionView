@@ -11,7 +11,7 @@ import UIKit
 
 class SecretWordCollectionController: UIViewController {
     
-    var txtField: UITextField? = nil
+    var customView: CustomInputView?
     
     private let reuseIdentifier = "SecretWordCellView"
     
@@ -76,20 +76,20 @@ class SecretWordCollectionController: UIViewController {
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
         
-        addDragDropDelegate()
-        
         //add Delegate to SecretWordService
         self.serviceSecretWord.delegate = self
     
+        
+        //setupKeyboardInputView
+        setupKeyboardInputView()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.txtField = simulateUITextField()
-        if let txt = self.txtField{
-            self.view.addSubview(txt)
-            //txt.becomeFirstResponder()
-        }
+        
+        let txtField = simulateUITextField()
+        self.view.addSubview(txtField)
+        txtField.becomeFirstResponder()
     }
     
     private func reloadCollectionViewSection() {
@@ -99,11 +99,22 @@ class SecretWordCollectionController: UIViewController {
         }
     }
     
+    private func reloadDataWithAnimation(){
+        UIView.transition(with: self.collectionView, duration: 0.6, options: .transitionCrossDissolve, animations: {
+            self.collectionView.reloadData()
+        }, completion: nil)
+    }
+    
     @objc private func toogleBlureBelowView(show: Bool, at indexPath: IndexPath?){
         // Add Blur
         //Frame
-        self.view.addSubview(self.blurView)
+        if !show {
+            self.blurView.removeFromSuperview()
+            return
+        }
 
+        self.view.addSubview(self.blurView)
+        
         NSLayoutConstraint.activate([
         self.blurView.leftAnchor.constraint(equalTo: self.view.safeAreaLeftAnchor),
             self.blurView.rightAnchor.constraint(equalTo: self.view.safeAreaRightAnchor),
@@ -184,7 +195,7 @@ extension SecretWordCollectionController: UICollectionViewDragDelegate{
     
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem]{
         
-        if !self.serviceSecretWord.isWordPlaceHorlder(at: indexPath.item), serviceSecretWord.isMaxWordAchieved(){
+        if !self.serviceSecretWord.isWordPlaceHorlder(at: indexPath.item){
             if !session.hasItemsConforming(toTypeIdentifiers: ["iden"]){
               
                 if let cell = collectionView.cellForItem(at: indexPath) as? SecretWordCellView{
@@ -288,10 +299,18 @@ extension SecretWordCollectionController: UICollectionViewDelegateFlowLayout{
 // MARK: extension SecretWordCellViewWordSecretDelegate
 extension SecretWordCollectionController: SecretWordCellViewWordSecretDelegate{
     func didTapWord(indexPath: IndexPath){
+        
+        guard serviceSecretWord.canEditWord else{
+            return
+        }
+        
+        self.customView?.isEditing = true
+        self.customView?.txtField.text = self.serviceSecretWord.words[indexPath.item]
         self.indexPathForEditCell = indexPath
-            self.collectionView.reloadItems(at: [indexPath])
-            self.toogleBlureBelowView(show: true, at: indexPath)
-            resetDragDropDelegate()
+        self.collectionView.reloadItems(at: [indexPath])
+        self.toogleBlureBelowView(show: true, at: indexPath)
+        
+        resetDragDropDelegate()
     }
 }
 
@@ -300,25 +319,34 @@ extension SecretWordCollectionController{
     
     private func simulateUITextField() -> UITextField{
         
-        if let txtField = txtField{
-            return txtField
-        }
-        
         let txtField = UITextField()
-        txtField.inputAccessoryView = keyboardInputView()
+        txtField.inputAccessoryView = self.customView
         
         return txtField
         
     }
     
-    private func keyboardInputView() -> UIView{
+    private func setupKeyboardInputView(){
         // Acd setup CustomView to The inputAccessoryView to TextFiled
-        let customView = CustomInputView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: 70))
-        customView.didClick = { txt in
-            self.serviceSecretWord.addNewWord(txt)
+        if customView == nil{
+            customView = CustomInputView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: 70))
+        }
+        
+        customView?.didClick = { word in
+            self.serviceSecretWord.addNewWord(word)
             self.reloadCollectionViewSection()
         }
-        return customView
+        
+        customView?.didConfirmEditing = { word in
+            if let indexPath = self.indexPathForEditCell{
+                self.toogleBlureBelowView(show: false, at: indexPath)
+                self.serviceSecretWord.editWord(index: indexPath.item, word: word)
+                self.customView?.isEditing = false
+                self.indexPathForEditCell = nil
+                self.collectionView.reloadItems(at: [indexPath])
+            }
+            self.addDragDropDelegate()
+        }
     }
     
     override var canBecomeFirstResponder: Bool{
@@ -330,9 +358,11 @@ extension SecretWordCollectionController{
 extension SecretWordCollectionController: ServiceSecretWordDelegate{
     func maxWordsAuthorized() {
         print("maxWordsAuthorized")
+        addDragDropDelegate()
     }
     
     func canWriteNewWord() {
         print("canWriteNewWord")
+        resetDragDropDelegate()
     }
 }

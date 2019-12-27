@@ -9,26 +9,37 @@
 import UIKit
 
 class CustomInputView: UIView{
+    var isEditing: Bool = false{
+        didSet{
+            changeTitleButton()
+        }
+    }
+    
     lazy var txtField: UITextField = UITextField()
-    lazy var buttonNext: UIButton = UIButton()
+    
+    lazy var buttonNext: UIButton = {
+        let button = UIButton()
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = UIFont.fontForInputText(withSize: 18)
+        button.backgroundColor = .black
+        button.setTitle("Next", for: .normal)
+        button.roundCorners(corners: [Corners.right], radius: 6)
+        button.addTarget(self, action: #selector(didClickNextButton(_:)), for: .touchUpInside)
+        return button
+    }()
     
     var didClick: ((_ text: String)-> Void)?
-        
+    var didConfirmEditing: ((_ text: String)-> Void)?
+    
     override init(frame: CGRect) {
         
         super.init(frame: frame)
         addButtonNext()
         // Add TextField Secret Text
         addTextField()
-        
-        
     }
+    
     private func addButtonNext(){
-        buttonNext.setTitleColor(.white, for: .normal)
-        buttonNext.titleLabel?.font = UIFont.fontForInputText(withSize: 18)
-        buttonNext.backgroundColor = .black
-        buttonNext.setTitle("Next", for: .normal)
-        buttonNext.roundCorners(corners: [Corners.right], radius: 6)
         
         // Add TextField to CustomView
         self.addSubview(buttonNext)
@@ -40,13 +51,22 @@ class CustomInputView: UIView{
         buttonNext.widthAnchor.constraint(equalToConstant: 100).isActive = true
         buttonNext.heightAnchor.constraint(equalTo: self.heightAnchor,constant: -20).isActive = true
         // Add Button Next
-        buttonNext.addTarget(self, action: #selector(didClickNextButton(_:)), for: .touchUpInside)
+        
     }
-   
+    
+    private func changeTitleButton(){
+        buttonNext.setTitle(self.isEditing ? "Edit" : "Next", for: .normal)
+    }
+    
     //MARK: didClick to Next Button
     @objc private func didClickNextButton(_ sender: Any?){
         if let txt = self.txtField.text, !txt.isEmpty, !txt.trimmingCharacters(in: .whitespaces).isEmpty{
-            self.didClick?(txt)
+            if self.isEditing {
+                self.didConfirmEditing?(txt)
+            }else{
+                self.didClick?(txt)
+            }
+            
             self.txtField.text = ""
         }
     }
@@ -74,7 +94,7 @@ class CustomInputView: UIView{
         txtField.leadingAnchor.constraint(equalTo: self.leadingAnchor,constant: 15).isActive = true
         txtField.trailingAnchor.constraint(equalTo: buttonNext.leadingAnchor).isActive = true
         txtField.heightAnchor.constraint(equalTo: buttonNext.heightAnchor).isActive = true
-         txtField.placeholder = "Input..."
+        txtField.placeholder = "Input..."
         
     }
     
@@ -91,5 +111,5 @@ extension CustomInputView: UITextFieldDelegate{
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         return true
     }
-   
+    
 }
