@@ -25,7 +25,6 @@ protocol SecretWordCellViewProtocol{
     var secretWord:String { get set }
     var numberWordIncrement: Int { get set }
     
-    
     func dragBegin()
     func dragEnd()
 }
@@ -46,6 +45,34 @@ class SecretWordCellView: UICollectionViewCell {
         didSet{
             updateNumber()
         }
+    }
+    
+    //MARK: Constructors
+    override init(frame: CGRect) {
+        
+        super.init(frame: frame)
+
+        setupCellView()
+        makeBorder()
+        makeShadow()
+    
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        self.secretWordLabel.text = nil
+        
+        self.toogleRedBorder(show: false)
+        self.backgroundColor = .white
+        self.secretWordLabel.textColor = CellViewColorItem.GRAY
+        
+        self.dotimageView.image = UIImage(named: "dot")
+        self.resetIncrementView()
     }
     
     //MARK: Setup Widgets
@@ -74,12 +101,6 @@ class SecretWordCellView: UICollectionViewCell {
         return secretTxt
     }()
     
-    @objc func didTapedLabel(_ sender: Any?){
-        if let delegate = self.delegate{
-            delegate.didTapWord(indexPath: self.indexPath)
-        }
-    }
-    
     var dotimageView: UIImageView = {
         let imgView = UIImageView(image: UIImage(named: "dot"))
         imgView.clipsToBounds = true
@@ -88,32 +109,6 @@ class SecretWordCellView: UICollectionViewCell {
         return imgView
     }()
  
-    //MARK: Constructors
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-
-        setupCellView()
-        makeBorder()
-        makeShadow()
-    
-    }
-    
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        self.secretWordLabel.text = nil
-        
-        self.toogleRedBorder(show: false)
-        self.backgroundColor = .white
-        self.secretWordLabel.textColor = CellViewColorItem.GRAY
-        
-        self.dotimageView.image = UIImage(named: "dot")
-        self.resetIncrementView()
-    }
     
     private func showIncrementView(_ show: Bool){
         self.containerIncrementView.isHidden = !show
@@ -149,10 +144,8 @@ class SecretWordCellView: UICollectionViewCell {
         addDotImageView()
     }
     
-    func setupCellForNewWord(){
-        
+    func setupCellForNewWordOrEditWord(){
         toogleRedBorder(show: true, CellViewColorItem.BORDEAUX)
-        
         self.numberWordIncrementLabel.textColor = CellViewColorItem.GRAY
         self.containerIncrementView.backgroundColor = CellViewColorItem.LIGHT_GRAY
         
@@ -192,6 +185,12 @@ class SecretWordCellView: UICollectionViewCell {
         self.secretWordLabel.leftAnchor.constraint(equalTo: self.numberWordIncrementLabel.leftAnchor, constant: 10).isActive = true
         self.secretWordLabel.rightAnchor.constraint(equalTo: self.rightAnchor, constant: 5).isActive = true
     }
+    
+    @objc private func didTapedLabel(_ sender: Any?){
+        if let delegate = self.delegate{
+            delegate.didTapWord(indexPath: self.indexPath)
+        }
+      }
     
     private func addDotImageView(){
         addSubview(self.dotimageView)

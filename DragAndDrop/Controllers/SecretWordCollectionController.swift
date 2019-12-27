@@ -17,15 +17,28 @@ class SecretWordCollectionController: UIViewController {
     
     private var serviceSecretWord = ServiceSecretWord()
     
+    private var indexPathForEditCell: IndexPath?
+    
     lazy private var collectionView: UICollectionView = {
         let collectionViewLayout = UICollectionViewFlowLayout()
         collectionViewLayout.scrollDirection = .vertical
-        collectionViewLayout.sectionInset = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
         collectionView.backgroundColor = UIColor.hexaToUIColor(hexa: "#fafafa")
-        collectionView.backgroundView?.isOpaque = false
+        collectionView.contentInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        collectionView.backgroundView?.isOpaque = true
+        collectionView.clipsToBounds = true
+        
         
         return collectionView
+    }()
+    
+    lazy private var blurView:UIView = {
+       
+        let blur = UIView()
+        blur.translatesAutoresizingMaskIntoConstraints = false
+        blur.backgroundColor = self.collectionView.backgroundColor?.withAlphaComponent(0.7)
+        blur.isOpaque = false
+        return blur
     }()
     
     convenience init() {
@@ -53,23 +66,21 @@ class SecretWordCollectionController: UIViewController {
         
         // Add Constraint
         self.collectionView.translatesAutoresizingMaskIntoConstraints = false
-        self.collectionView.centerYAnchor.constraint(equalTo: self.view.centerYAnchor, constant: 0).isActive = true
-        self.collectionView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor, constant: 0).isActive = true
-        self.collectionView.widthAnchor.constraint(equalTo: self.view.widthAnchor,constant: 0).isActive = true
-        self.collectionView.heightAnchor.constraint(equalTo: self.view.heightAnchor,constant: 0).isActive = true
-        
+        self.collectionView.centerYAnchor.constraint(equalTo: self.view.centerYAnchor).isActive = true
+        self.collectionView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
+        self.collectionView.widthAnchor.constraint(equalTo: self.view.widthAnchor).isActive = true
+        self.collectionView.heightAnchor.constraint(equalTo: self.view.heightAnchor).isActive = true
         
         self.collectionView.contentInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
         
-        addDragDelegate()
+        addDragDropDelegate()
         
         //add Delegate to SecretWordService
         self.serviceSecretWord.delegate = self
-        
-        // Do any additional setup after loading the view.
+    
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -77,22 +88,8 @@ class SecretWordCollectionController: UIViewController {
         self.txtField = simulateUITextField()
         if let txt = self.txtField{
             self.view.addSubview(txt)
-            txt.becomeFirstResponder()
+            //txt.becomeFirstResponder()
         }
-    }
-    
-    private func addDragDelegate(){
-        //set delegate
-        self.collectionView.dragInteractionEnabled = true
-        self.collectionView.dragDelegate = self
-        self.collectionView.dropDelegate = self
-    }
-    
-    private func resetDragDelegate(){
-        //set delegate
-        self.collectionView.dragInteractionEnabled = false
-        self.collectionView.dragDelegate = nil
-        self.collectionView.dropDelegate = nil
     }
     
     private func reloadCollectionViewSection() {
@@ -100,8 +97,26 @@ class SecretWordCollectionController: UIViewController {
         DispatchQueue.main.asyncAfter(deadline: .now()+0.2) {
             self.collectionView.reloadSections(IndexSet(arrayLiteral: 0))
         }
-        
     }
+    
+    @objc private func toogleBlureBelowView(show: Bool, at indexPath: IndexPath?){
+        // Add Blur
+        //Frame
+        self.view.addSubview(self.blurView)
+
+        NSLayoutConstraint.activate([
+        self.blurView.leftAnchor.constraint(equalTo: self.view.safeAreaLeftAnchor),
+            self.blurView.rightAnchor.constraint(equalTo: self.view.safeAreaRightAnchor),
+            self.blurView.topAnchor.constraint(equalTo: self.view.safeAreaTopAnchor),
+            self.blurView.bottomAnchor.constraint(equalTo: self.view.safeAreaBottomAnchor)
+        ])
+        
+        self.collectionView.addSubview(self.blurView)
+        self.view.bringSubviewToFront(self.collectionView)
+        self.blurView.layer.zPosition = -1
+        //self.collectionView.layer.zPosition = 1
+   }
+    
 }
 
 // Protocol
@@ -126,23 +141,13 @@ extension SecretWordCollectionController: OrderWordProtocol{
                     collectionView.insertItems(at: [destinationIndexPath])
                     
                 }){ (finished) in
-                    
-
                 }
-                
                 coordinator.drop(item.dragItem, toItemAt: destinationIndexPath)
-                
                 self.reloadCollectionViewSection()
-
             }
-            
-                
         }
-    
     }
-    
 }
-
 
 // MARK: extension UICollectionViewDropDelegate
 extension SecretWordCollectionController: UICollectionViewDropDelegate {
@@ -164,15 +169,10 @@ extension SecretWordCollectionController: UICollectionViewDropDelegate {
         
         switch coordinator.proposal.operation {
         case .move:
-            
             self.reorder(collectionView: collectionView, destinationIndexPath, coordinator)
-            
         default: return
-            
         }
-        
     }
-    
 }
 
 // MARK: extension UICollectionViewDragDelegate
@@ -204,6 +204,18 @@ extension SecretWordCollectionController: UICollectionViewDragDelegate{
         
     }
     
+    private func addDragDropDelegate(){
+         //set delegate
+         self.collectionView.dragInteractionEnabled = true
+         self.collectionView.dragDelegate = self
+         self.collectionView.dropDelegate = self
+     }
+     
+     private func resetDragDropDelegate(){
+         self.collectionView.dragInteractionEnabled = false
+         self.collectionView.dragDelegate = nil
+         self.collectionView.dropDelegate = nil
+     }
 }
 
 
@@ -229,9 +241,19 @@ extension SecretWordCollectionController: UICollectionViewDataSource {
             secretCell.indexPath = indexPath
             secretCell.delegate = self
             secretCell.secretWord = item
+            secretCell.indexPath = indexPath
             secretCell.numberWordIncrement = indexPath.item + 1
-            if serviceSecretWord.isWordPlaceHorlder(at: indexPath.item) {
-                secretCell.setupCellForNewWord()
+            
+            //Refacto /!\ self.indexPathForEditCell?.item == indexPath.item
+            if self.indexPathForEditCell?.item == indexPath.item{
+                secretCell.layer.zPosition = 100
+            }else{
+                secretCell.layer.zPosition = -1
+            }
+            
+            //Refacto /!\ self.indexPathForEditCell?.item == indexPath.item
+            if serviceSecretWord.isWordPlaceHorlder(at: indexPath.item) || self.indexPathForEditCell?.item == indexPath.item{
+                secretCell.setupCellForNewWordOrEditWord()
             }
             
             return secretCell
@@ -246,7 +268,8 @@ extension SecretWordCollectionController: UICollectionViewDataSource {
 extension SecretWordCollectionController: UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize{
         
-        if self.serviceSecretWord.isWordPlaceHorlder(at: indexPath.item){
+        if self.indexPathForEditCell?.item == indexPath.item || self.serviceSecretWord.isWordPlaceHorlder(at: indexPath.item){
+            
             return CGSize(width: self.view.bounds.size.width/3 - 20, height: 120)
         }
         
@@ -265,7 +288,10 @@ extension SecretWordCollectionController: UICollectionViewDelegateFlowLayout{
 // MARK: extension SecretWordCellViewWordSecretDelegate
 extension SecretWordCollectionController: SecretWordCellViewWordSecretDelegate{
     func didTapWord(indexPath: IndexPath){
-        print("didTapWord at IndexPath : \(indexPath.item)")
+        self.indexPathForEditCell = indexPath
+            self.collectionView.reloadItems(at: [indexPath])
+            self.toogleBlureBelowView(show: true, at: indexPath)
+            resetDragDropDelegate()
     }
 }
 

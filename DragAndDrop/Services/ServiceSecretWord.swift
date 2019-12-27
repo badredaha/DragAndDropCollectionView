@@ -26,8 +26,8 @@ class ServiceSecretWord{
         self.delegate = delegate
     }
     
-    //var words = ["🍎","💨","🥑","🍅","🥓","🍮","🏀","🥋","🏋🏻‍♀️","🏂"]
-    var words = ["_"]
+    var words = ["🍎","💨","🥑","🍅","🥓","🍮","🏀","🥋","🏋🏻‍♀️","🏂","👩🏻‍💻","🌂"]
+    //var words = ["_"]
     
     func isPlaceHolderPresentAtEnd() -> Bool{
         if self.words.last == "_" {
