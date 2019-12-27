@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		B203EE0923B4C3E5006301BD /* ServiceSecretWordTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B203EE0823B4C3E5006301BD /* ServiceSecretWordTests.swift */; };
 		B228658C23ACBBB100B3C9F7 /* View-Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B228658B23ACBBB100B3C9F7 /* View-Extension.swift */; };
+		B25E246023B6CD36001EDB4F /* AppCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = B25E245F23B6CD36001EDB4F /* AppCommon.swift */; };
 		B286178C239EB24700332062 /* SecretWordCollectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B286178B239EB24700332062 /* SecretWordCollectionController.swift */; };
 		B28820F523AFF9B600487AC7 /* CustomInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28820F423AFF9B600487AC7 /* CustomInputView.swift */; };
 		B28820F723B026BC00487AC7 /* ServiceSecretWord.swift in Sources */ = {isa = PBXBuildFile; fileRef = B28820F623B026BC00487AC7 /* ServiceSecretWord.swift */; };
@@ -33,6 +34,7 @@
 /* Begin PBXFileReference section */
 		B203EE0823B4C3E5006301BD /* ServiceSecretWordTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceSecretWordTests.swift; sourceTree = "<group>"; };
 		B228658B23ACBBB100B3C9F7 /* View-Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View-Extension.swift"; sourceTree = "<group>"; };
+		B25E245F23B6CD36001EDB4F /* AppCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCommon.swift; sourceTree = "<group>"; };
 		B286178B239EB24700332062 /* SecretWordCollectionController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecretWordCollectionController.swift; sourceTree = "<group>"; };
 		B28820F423AFF9B600487AC7 /* CustomInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomInputView.swift; sourceTree = "<group>"; };
 		B28820F623B026BC00487AC7 /* ServiceSecretWord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceSecretWord.swift; sourceTree = "<group>"; };
@@ -66,6 +68,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B25E245E23B6CD22001EDB4F /* Commons */ = {
+			isa = PBXGroup;
+			children = (
+				B25E245F23B6CD36001EDB4F /* AppCommon.swift */,
+			);
+			path = Commons;
+			sourceTree = "<group>";
+		};
 		B2861787239EB1C300332062 /* Protocols */ = {
 			isa = PBXGroup;
 			children = (
@@ -113,6 +123,7 @@
 		B2E16BA6239C5F5C007122E5 /* DragAndDrop */ = {
 			isa = PBXGroup;
 			children = (
+				B25E245E23B6CD22001EDB4F /* Commons */,
 				B28820F123AEDC7F00487AC7 /* Services */,
 				B2861787239EB1C300332062 /* Protocols */,
 				B2E16BCE239C6A73007122E5 /* Views */,
@@ -254,6 +265,7 @@
 				B286178C239EB24700332062 /* SecretWordCollectionController.swift in Sources */,
 				B28820F523AFF9B600487AC7 /* CustomInputView.swift in Sources */,
 				B2E16BD0239C6AD3007122E5 /* SecretWordCellView.swift in Sources */,
+				B25E246023B6CD36001EDB4F /* AppCommon.swift in Sources */,
 				B2E16BA8239C5F5C007122E5 /* AppDelegate.swift in Sources */,
 				B2C43B9D23AB73F500C9595C /* FontApp.swift in Sources */,
 				B228658C23ACBBB100B3C9F7 /* View-Extension.swift in Sources */,

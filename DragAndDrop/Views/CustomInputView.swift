@@ -43,7 +43,7 @@ class CustomInputView: UIView{
         let button = UIButton()
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = UIFont.fontForInputText(withSize: 18)
-        button.backgroundColor = .red
+        button.backgroundColor = ColorItemApp.RED_BORDEAUX
         button.setTitle("Restore", for: .normal)
         button.roundCorners(corners: [Corners.all], radius: 6)
         button.addTarget(self, action: #selector(restore(_:)), for: .touchUpInside)

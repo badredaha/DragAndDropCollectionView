@@ -8,15 +8,6 @@
 
 import UIKit
 
-struct CellViewColorItem {
-    static let RED_LIGHT =  UIColor.hexaToUIColor(hexa:"FFCCCC")
-    static let BORDEAUX =  UIColor.hexaToUIColor(hexa: "b30059")
-    static let GRAY = UIColor.hexaToUIColor(hexa: "666666")
-    static let LIGHT_GRAY = UIColor.hexaToUIColor(hexa: "#E9E9E9")
-    static let RED_BORDEAUX = UIColor.hexaToUIColor(hexa: "990000")
-
-}
-
 protocol SecretWordCellViewWordSecretDelegate {
     func didTapWord(indexPath: IndexPath)
 }
@@ -69,9 +60,9 @@ class SecretWordCellView: UICollectionViewCell {
         
         self.toogleRedBorder(show: false)
         self.backgroundColor = .white
-        self.secretWordLabel.textColor = CellViewColorItem.GRAY
+        self.secretWordLabel.textColor = ColorItemApp.GRAY
         
-        self.dotimageView.image = UIImage(named: "dot")
+        self.dotimageView.tintColor = .gray
         self.resetIncrementView()
     }
     
@@ -79,14 +70,14 @@ class SecretWordCellView: UICollectionViewCell {
     
     let containerIncrementView: UIView = {
         let containerView = UIView()
-        containerView.backgroundColor = CellViewColorItem.RED_LIGHT
+        containerView.backgroundColor = ColorItemApp.RED_LIGHT
         containerView.translatesAutoresizingMaskIntoConstraints = false
         return containerView
     }()
     
     let numberWordIncrementLabel: UILabel = {
         let label = UILabel()
-        label.textColor = CellViewColorItem.BORDEAUX
+        label.textColor = ColorItemApp.BORDEAUX
         label.font = UIFont.fontForInputText(withSize: 14)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -94,7 +85,7 @@ class SecretWordCellView: UICollectionViewCell {
     
     let secretWordLabel: UILabel = {
         let secretTxt = UILabel()
-        secretTxt.textColor = CellViewColorItem.GRAY
+        secretTxt.textColor = ColorItemApp.GRAY
         secretTxt.font = UIFont.fontForInputText(withSize: 16)
         secretTxt.isUserInteractionEnabled = true
         secretTxt.translatesAutoresizingMaskIntoConstraints = false
@@ -102,10 +93,13 @@ class SecretWordCellView: UICollectionViewCell {
     }()
     
     var dotimageView: UIImageView = {
-        let imgView = UIImageView(image: UIImage(named: "dot"))
+        let imgView = UIImageView()
+        imgView.image = UIImage(named: "drag")?.withRenderingMode(.alwaysTemplate)
+        imgView.tintColor = .gray
         imgView.clipsToBounds = true
         imgView.contentMode = .scaleAspectFit
         imgView.translatesAutoresizingMaskIntoConstraints = false
+        
         return imgView
     }()
  
@@ -119,8 +113,8 @@ class SecretWordCellView: UICollectionViewCell {
     
     private func resetIncrementView(){
         self.numberWordIncrementLabel.text = nil
-        self.numberWordIncrementLabel.textColor = CellViewColorItem.BORDEAUX
-        self.containerIncrementView.backgroundColor = CellViewColorItem.RED_LIGHT
+        self.numberWordIncrementLabel.textColor = ColorItemApp.BORDEAUX
+        self.containerIncrementView.backgroundColor = ColorItemApp.RED_LIGHT
         self.containerIncrementView.isHidden = false
     }
     
@@ -145,9 +139,9 @@ class SecretWordCellView: UICollectionViewCell {
     }
     
     func setupCellForNewWordOrEditWord(){
-        toogleRedBorder(show: true, CellViewColorItem.BORDEAUX)
-        self.numberWordIncrementLabel.textColor = CellViewColorItem.GRAY
-        self.containerIncrementView.backgroundColor = CellViewColorItem.LIGHT_GRAY
+        toogleRedBorder(show: true, ColorItemApp.BORDEAUX)
+        self.numberWordIncrementLabel.textColor = ColorItemApp.GRAY
+        self.containerIncrementView.backgroundColor = ColorItemApp.LIGHT_GRAY
         
       }
     
@@ -180,8 +174,7 @@ class SecretWordCellView: UICollectionViewCell {
         tapGesture.numberOfTapsRequired = 1
         self.secretWordLabel.addGestureRecognizer(tapGesture)
         
-        
-        self.secretWordLabel.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor, constant: -5).isActive = true
+        self.secretWordLabel.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor, constant: -15).isActive = true
         self.secretWordLabel.leftAnchor.constraint(equalTo: self.numberWordIncrementLabel.leftAnchor, constant: 10).isActive = true
         self.secretWordLabel.rightAnchor.constraint(equalTo: self.rightAnchor, constant: 5).isActive = true
     }
@@ -197,10 +190,10 @@ class SecretWordCellView: UICollectionViewCell {
         
         self.dotimageView.centerYAnchor.constraint(equalTo: self.secretWordLabel.centerYAnchor, constant: 0).isActive = true
         
-        self.dotimageView.rightAnchor.constraint(equalTo: self.secretWordLabel.leftAnchor, constant: 0).isActive = true
-        
-        self.dotimageView.widthAnchor.constraint(equalToConstant: 15).isActive = true
-        self.dotimageView.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        self.dotimageView.rightAnchor.constraint(equalTo: self.secretWordLabel.leftAnchor, constant: -5).isActive = true
+    
+        self.dotimageView.widthAnchor.constraint(equalToConstant: 10).isActive = true
+        self.dotimageView.heightAnchor.constraint(equalToConstant: 14).isActive = true
     }
 }
 
@@ -208,10 +201,10 @@ class SecretWordCellView: UICollectionViewCell {
 extension SecretWordCellView: SecretWordCellViewProtocol{
     
     func dragBegin(){
-        self.toogleRedBorder(show: true,CellViewColorItem.BORDEAUX)
-        self.backgroundColor = CellViewColorItem.RED_BORDEAUX
+        self.toogleRedBorder(show: true,ColorItemApp.BORDEAUX)
+        self.backgroundColor = ColorItemApp.RED_BORDEAUX
         self.secretWordLabel.textColor = .white
-        self.dotimageView.image = UIImage(named: "dot_white")
+        self.dotimageView.tintColor = .white
         // add Anchor Height
         self.frame.size = CGSize(width: self.frame.width, height: self.frame.size.height/2)
         self.frame.origin = CGPoint(x: self.frame.origin.x, y: self.frame.origin.y+8)
@@ -224,8 +217,8 @@ extension SecretWordCellView: SecretWordCellViewProtocol{
     func dragEnd(){
         self.toogleRedBorder(show: false)
         self.backgroundColor = .white
-        self.secretWordLabel.textColor = CellViewColorItem.GRAY
-        self.dotimageView.image = UIImage(named: "dot")
+        self.secretWordLabel.textColor = ColorItemApp.GRAY
+        self.dotimageView.tintColor = .none
         self.secretWordLabel.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor, constant: -5).isActive = true
         self.showIncrementView(true)
     }
