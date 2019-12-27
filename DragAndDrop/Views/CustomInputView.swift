@@ -9,13 +9,24 @@
 import UIKit
 
 class CustomInputView: UIView{
-    var isEditing: Bool = false{
-        didSet{
-            changeTitleButton()
-        }
-    }
     
-    lazy var txtField: UITextField = UITextField()
+    //MARK: Closure Handle click
+    var didClick: ((_ text: String)-> Void)?
+    var didConfirmEditing: ((_ text: String)-> Void)?
+    var didClickRestore: (()-> Void)?
+    
+    lazy var txtField: UITextField = {
+        let txtfield = UITextField()
+        txtfield.roundCorners(corners: [Corners.left], radius: 6)
+        txtfield.textColor = .black
+        txtfield.returnKeyType = .continue
+        txtfield.font = UIFont.fontForInputText(withSize: 18)
+        txtfield.backgroundColor = .white
+        txtfield.makeShadow()
+        txtfield.returnKeyType = .done
+        txtfield.placeholder = "Input..."
+        return txtfield
+    }()
     
     lazy var buttonNext: UIButton = {
         let button = UIButton()
@@ -28,8 +39,23 @@ class CustomInputView: UIView{
         return button
     }()
     
-    var didClick: ((_ text: String)-> Void)?
-    var didConfirmEditing: ((_ text: String)-> Void)?
+    lazy var restoreButton: UIButton = {
+        let button = UIButton()
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = UIFont.fontForInputText(withSize: 18)
+        button.backgroundColor = .red
+        button.setTitle("Restore", for: .normal)
+        button.roundCorners(corners: [Corners.all], radius: 6)
+        button.addTarget(self, action: #selector(restore(_:)), for: .touchUpInside)
+        return button
+    }()
+    
+    var isEditing: Bool = false{
+        didSet{
+            changeTitleButton()
+        }
+    }
+    
     
     override init(frame: CGRect) {
         
@@ -71,14 +97,12 @@ class CustomInputView: UIView{
         }
     }
     
+    //MARK: click restoreButton
+    @objc private func restore(_ sender: Any?){
+        self.didClickRestore?()
+    }
+    
     private func addTextField(){
-        txtField.roundCorners(corners: [Corners.left], radius: 6)
-        txtField.textColor = .black
-        txtField.returnKeyType = .continue
-        txtField.font = UIFont.fontForInputText(withSize: 18)
-        txtField.backgroundColor = .white
-        txtField.makeShadow()
-        txtField.returnKeyType = .done
         
         let paddingView: UIView = UIView(frame: CGRect(x: 0, y: 0, width: 12 , height: 5))
         txtField.leftView = paddingView
@@ -94,8 +118,27 @@ class CustomInputView: UIView{
         txtField.leadingAnchor.constraint(equalTo: self.leadingAnchor,constant: 15).isActive = true
         txtField.trailingAnchor.constraint(equalTo: buttonNext.leadingAnchor).isActive = true
         txtField.heightAnchor.constraint(equalTo: buttonNext.heightAnchor).isActive = true
-        txtField.placeholder = "Input..."
         
+    }
+    
+    func showRestoreButton(show: Bool){
+        
+        if show {
+            self.txtField.removeFromSuperview()
+            self.buttonNext.removeFromSuperview()
+            self.addSubview(self.restoreButton)
+            //Add Constraints  TextField Secret Text
+            self.restoreButton.translatesAutoresizingMaskIntoConstraints = false
+            self.restoreButton.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
+            self.restoreButton.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
+            self.restoreButton.heightAnchor.constraint(equalTo: self.heightAnchor,constant: -15).isActive = true
+            self.restoreButton.widthAnchor.constraint(equalTo: self.widthAnchor,constant: -15).isActive = true
+            
+        }else{
+            self.restoreButton.removeFromSuperview()
+            self.addTextField()
+            self.addButtonNext()
+        }
     }
     
     required init?(coder: NSCoder) {

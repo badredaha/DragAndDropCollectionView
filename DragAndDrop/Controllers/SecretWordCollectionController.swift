@@ -358,11 +358,13 @@ extension SecretWordCollectionController{
 extension SecretWordCollectionController: ServiceSecretWordDelegate{
     func maxWordsAuthorized() {
         print("maxWordsAuthorized")
+        self.customView?.showRestoreButton(show: true)
         addDragDropDelegate()
     }
     
     func canWriteNewWord() {
         print("canWriteNewWord")
+        self.customView?.showRestoreButton(show: false)
         resetDragDropDelegate()
     }
 }
