@@ -69,8 +69,6 @@ class SecretWordCollectionController: UIViewController {
         self.collectionView.widthAnchor.constraint(equalTo: self.view.widthAnchor).isActive = true
         self.collectionView.heightAnchor.constraint(equalTo: self.view.heightAnchor).isActive = true
         
-        self.collectionView.contentInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
         
@@ -255,7 +253,6 @@ extension SecretWordCollectionController: UICollectionViewDataSource {
             secretCell.indexPath = indexPath
             secretCell.numberWordIncrement = indexPath.item + 1
             
-            //Refacto /!\ self.indexPathForEditCell?.item == indexPath.item
             if serviceSecretWord.isWordPlaceHorlder(at: indexPath.item){
                 secretCell.setupCellStateOpen()
             }
@@ -293,10 +290,7 @@ extension SecretWordCollectionController: UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 10.0
     }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
-    }
+  
 }
 
 // MARK: extension SecretWordCellViewWordSecretDelegate
@@ -336,7 +330,6 @@ extension SecretWordCollectionController{
                 self.customViewKeyboardInput?.isEditing = false
                 self.indexPathForEditCell = nil
                 self.collectionView.reloadItems(at: [indexPath])
-                self.collectionView.contentOffset = .zero
             }
             
             self.addDragDropDelegate()
