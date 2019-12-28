@@ -82,10 +82,8 @@ class SecretWordCollectionController: UIViewController {
         
         //add Delegate to SecretWordService
         self.serviceSecretWord.delegate = self
-    
-        if self.serviceSecretWord.isMaxWordAchieved(){
-            addDragDropDelegate()
-        }
+        
+        addDragDropDelegate()
         
         //MARK: setupKeyboardInputView
         setupKeyboardInputView()
@@ -340,7 +338,6 @@ extension SecretWordCollectionController{
                 
                 self.indexPathForEditCell = nil
                 self.collectionView.reloadItems(at: [indexPath])
-                self.addDragDropDelegate()
             }
         }
         
@@ -358,8 +355,6 @@ extension SecretWordCollectionController{
             self.customViewKeyboardInput?.isEditing = false
             self.indexPathForEditCell = nil
             self.collectionView.reloadItems(at: [indexPath])
-            self.addDragDropDelegate()
-            
         }
     }
     
