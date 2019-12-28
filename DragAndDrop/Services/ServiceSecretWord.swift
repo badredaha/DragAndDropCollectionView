@@ -69,9 +69,18 @@ class ServiceSecretWord {
         
         self.words.remove(at: atIndex)
         self.words.insert(word, at: atIndex)
+        
         if !isPlaceHolderPresentAtEnd() , !self.isMaxWordAchieved(){
             self.words.append("_")
         }
+        
+        if isMaxWordAchieved(){
+            self.delegate?.maxWordsAuthorized()
+            
+        }else{
+            self.delegate?.canWriteNewWord()
+        }
+        
     }
     
     func resetWords(){
