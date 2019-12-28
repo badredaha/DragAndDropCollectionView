@@ -79,6 +79,9 @@ class SecretWordCollectionController: UIViewController {
         //add Delegate to SecretWordService
         self.serviceSecretWord.delegate = self
     
+        if self.serviceSecretWord.isMaxWordAchieved(){
+            addDragDropDelegate()
+        }
         
         //setupKeyboardInputView
         setupKeyboardInputView()
@@ -284,7 +287,7 @@ extension SecretWordCollectionController: UICollectionViewDelegateFlowLayout{
             return CGSize(width: self.view.bounds.size.width/3 - 20, height: 120)
         }
         
-        return CGSize(width: self.view.bounds.size.width/3 - 20, height: 70)
+        return CGSize(width: self.view.bounds.size.width/3 - 20, height: 80)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
