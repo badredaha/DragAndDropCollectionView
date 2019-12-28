@@ -69,6 +69,9 @@ class ServiceSecretWord {
         
         self.words.remove(at: atIndex)
         self.words.insert(word, at: atIndex)
+        if !isPlaceHolderPresentAtEnd(){
+            self.words.append("_")
+        }
     }
     
     func resetWords(){
