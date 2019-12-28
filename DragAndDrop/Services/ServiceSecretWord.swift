@@ -21,12 +21,7 @@ class ServiceSecretWord {
             return 12
         }
     }
-    
-    var canEditWord: Bool{
-        get{
-            return self.words.count == maxWordAuthorized
-        }
-    }
+
     var delegate:ServiceSecretWordDelegate?
     
     init(delegate:ServiceSecretWordDelegate? = nil) {
@@ -71,9 +66,6 @@ class ServiceSecretWord {
     }
     
     func editWord(index atIndex: Int, word: String) {
-        guard canEditWord else {
-            return
-        }
         
         self.words.remove(at: atIndex)
         self.words.insert(word, at: atIndex)

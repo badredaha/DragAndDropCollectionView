@@ -28,7 +28,6 @@ class SecretWordCollectionController: UIViewController {
         collectionView.contentInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         collectionView.backgroundView?.isOpaque = true
         collectionView.clipsToBounds = true
-        collectionView.alwaysBounceVertical = true
         return collectionView
     }()
     
@@ -303,11 +302,7 @@ extension SecretWordCollectionController: UICollectionViewDelegateFlowLayout{
 // MARK: extension SecretWordCellViewWordSecretDelegate
 extension SecretWordCollectionController: SecretWordCellViewWordSecretDelegate{
     func didTapWord(indexPath: IndexPath){
-        
-        guard serviceSecretWord.canEditWord else{
-            return
-        }
-        
+    
         self.customViewKeyboardInput?.isEditing = true
         self.customViewKeyboardInput?.txtField.text = self.serviceSecretWord.words[indexPath.item]
         self.indexPathForEditCell = indexPath
@@ -341,10 +336,9 @@ extension SecretWordCollectionController{
                 self.customViewKeyboardInput?.isEditing = false
                 self.indexPathForEditCell = nil
                 self.collectionView.reloadItems(at: [indexPath])
-                
                 self.collectionView.contentOffset = .zero
-                
             }
+            
             self.addDragDropDelegate()
         }
         
