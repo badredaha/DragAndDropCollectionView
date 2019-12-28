@@ -25,6 +25,11 @@ class SecretWordCellView: UICollectionViewCell {
     var delegate: SecretWordCellViewWordSecretDelegate?
     var indexPath: IndexPath = IndexPath()
     
+    //Constraint
+    var incrementViewHeight: NSLayoutConstraint?
+    
+    var boottomSecretLabelConstraint: NSLayoutConstraint?
+    
     //MARK: Accessors -SecretWordCellViewProtocol
     var secretWord: String = ""{
         didSet{
@@ -63,6 +68,9 @@ class SecretWordCellView: UICollectionViewCell {
         self.secretWordLabel.textColor = ColorItemApp.GRAY
         
         self.dotimageView.tintColor = .gray
+        
+        self.incrementViewHeight?.constant = 25
+        
         self.resetIncrementView()
     }
     
@@ -142,6 +150,11 @@ class SecretWordCellView: UICollectionViewCell {
         toogleRedBorder(show: true, ColorItemApp.BORDEAUX)
         self.numberWordIncrementLabel.textColor = ColorItemApp.GRAY
         self.containerIncrementView.backgroundColor = ColorItemApp.LIGHT_GRAY
+        self.incrementViewHeight?.constant = 45
+        
+        UIView.animate(withDuration: 0.1, delay: 0,usingSpringWithDamping: 1, initialSpringVelocity: 1,options: .showHideTransitionViews,animations: {
+                   self.layoutIfNeeded()
+               })
         
       }
     
@@ -154,11 +167,13 @@ class SecretWordCellView: UICollectionViewCell {
         
         // Setup Constraint For View Container And UILabel Increment Word
         
+        self.incrementViewHeight = self.containerIncrementView.heightAnchor.constraint(equalToConstant: 25)
+        self.incrementViewHeight?.isActive = true
+        
         NSLayoutConstraint.activate([
             self.containerIncrementView.leftAnchor.constraint(equalTo: leftAnchor, constant: 10),
             self.containerIncrementView.topAnchor.constraint(equalTo: topAnchor, constant: 0),
             self.containerIncrementView.widthAnchor.constraint(equalToConstant: 23),
-            self.containerIncrementView.heightAnchor.constraint(equalToConstant: 25),
             self.numberWordIncrementLabel.leftAnchor.constraint(equalTo: containerIncrementView.leftAnchor, constant: 2),
             self.numberWordIncrementLabel.rightAnchor.constraint(equalTo: containerIncrementView.rightAnchor, constant: 0),
             self.numberWordIncrementLabel.bottomAnchor.constraint(equalTo: containerIncrementView.bottomAnchor, constant: -2)
@@ -174,9 +189,12 @@ class SecretWordCellView: UICollectionViewCell {
         tapGesture.numberOfTapsRequired = 1
         self.secretWordLabel.addGestureRecognizer(tapGesture)
         
-        self.secretWordLabel.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor, constant: -15).isActive = true
         self.secretWordLabel.leftAnchor.constraint(equalTo: self.numberWordIncrementLabel.leftAnchor, constant: 10).isActive = true
         self.secretWordLabel.rightAnchor.constraint(equalTo: self.rightAnchor, constant: 5).isActive = true
+        
+        self.boottomSecretLabelConstraint = self.secretWordLabel.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor, constant: -15)
+        
+        self.boottomSecretLabelConstraint?.isActive = true
     }
     
     @objc private func didTapedLabel(_ sender: Any?){
@@ -206,11 +224,17 @@ extension SecretWordCellView: SecretWordCellViewProtocol{
         self.secretWordLabel.textColor = .white
         self.dotimageView.tintColor = .white
         // add Anchor Height
-        self.frame.size = CGSize(width: self.frame.width, height: self.frame.size.height/2)
-        self.frame.origin = CGPoint(x: self.frame.origin.x, y: self.frame.origin.y+8)
-        UIView.animate(withDuration: 0.2) {
+        let marge:CGFloat = 10
+        let height = self.frame.size.height/1.6
+        self.frame.size = CGSize(width: self.frame.width, height: height)
+        self.frame.origin = CGPoint(x: self.frame.origin.x, y: self.frame.origin.y + height/4)
+        
+        self.boottomSecretLabelConstraint?.constant = (-height/2) + marge
+        
+        UIView.animate(withDuration: 0.5, delay: 0,usingSpringWithDamping: 1, initialSpringVelocity: 1,options: .allowUserInteraction,animations: {
+            self.layoutIfNeeded()
             self.setNeedsLayout()
-        }
+        })
         self.showIncrementView(false)
     }
     
