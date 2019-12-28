@@ -46,6 +46,7 @@ class SecretWordCollectionController: UIViewController {
     
     @objc private func tapBlureView(_ sender: Any?){
        valideEdit()
+        
     }
     
     convenience init() {
@@ -129,7 +130,6 @@ class SecretWordCollectionController: UIViewController {
         self.collectionView.addSubview(self.blurView)
         self.view.bringSubviewToFront(self.collectionView)
         self.blurView.layer.zPosition = -1
-        //self.collectionView.layer.zPosition = 1
    }
     
 }
@@ -331,13 +331,8 @@ extension SecretWordCollectionController{
         
         customViewKeyboardInput?.didConfirmEditing = { word in
             if let indexPath = self.indexPathForEditCell{
-                self.toogleBlureBelowView(show: false, at: indexPath)
                 self.serviceSecretWord.editWord(index: indexPath.item, word: word)
-                self.customViewKeyboardInput?.isEditing = false
-                self.customViewKeyboardInput?.resetTextField()
-                
-                self.indexPathForEditCell = nil
-                self.collectionView.reloadItems(at: [indexPath])
+                self.valideEdit()
             }
         }
         
@@ -351,12 +346,24 @@ extension SecretWordCollectionController{
     
     private func valideEdit(){
         if let indexPath = self.indexPathForEditCell{
+
+            self.customViewKeyboardInput?.isEditing = false
+            self.customViewKeyboardInput?.resetTextField()
+            self.customViewKeyboardInput?.txtField.resignFirstResponder()
+            
             self.toogleBlureBelowView(show: false, at: indexPath)
             self.customViewKeyboardInput?.isEditing = false
             self.indexPathForEditCell = nil
             self.collectionView.reloadItems(at: [indexPath])
         }
+        
+        if serviceSecretWord.isMaxWordAchieved() {
+            self.customViewKeyboardInput?.showRestoreButton(show: true)
+        }
+        
+        addDragDropDelegate()
     }
+    
     
     override var inputAccessoryView: UIView? {
         get {

@@ -93,7 +93,22 @@
             words.forEach { (s) in
                 sut?.addNewWord(s)
             }
+            
             XCTAssert((sut?.isMaxWordAchieved())!, "Max words is not equal to max word authorized")
+        }
+        
+        func test_max_word_achieved_without_place_holder() {
+            //sut?.words = Hel
+            
+            let words = HelperServiceSecretWord.makeMaxWordsForSut()
+            words.forEach { (s) in
+                sut?.addNewWord(s)
+            }
+            
+            sut?.words.removeLast()
+            sut?.words.append("_")
+            
+            XCTAssert((sut?.isMaxWordAchieved())! == false, "cannot have place holder at last position")
         }
         
         func test_add_new_word_must_call_can_write_new_word_delegate_call_once() {
@@ -189,8 +204,8 @@
         }
         
         static func makeMaxWordsForSut() -> [String]{
-            var words = [""]
-            for i in 0...10 {
+            var words = ["word"]
+            for i in 1...11 {
                 words.append("word\(i)")
             }
             return words

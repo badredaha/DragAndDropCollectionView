@@ -39,7 +39,7 @@ class ServiceSecretWord {
     }
     
     func isMaxWordAchieved() -> Bool{
-        return self.words.count == self.maxWordAuthorized
+        return !isPlaceHolderPresentAtEnd() && self.words.count == self.maxWordAuthorized
     }
     
     func isWordPlaceHorlder(at index: Int) -> Bool{
