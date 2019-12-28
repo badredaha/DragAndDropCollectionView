@@ -34,8 +34,8 @@ class CustomInputView: UIView{
         button.titleLabel?.font = UIFont.fontForInputText(withSize: 18)
         button.backgroundColor = .black
         button.setTitle("Next", for: .normal)
+        button.setTitleColor(.lightGray, for: .highlighted)
         button.roundCorners(corners: [Corners.right], radius: 6)
-        button.showsTouchWhenHighlighted = true
         button.addTarget(self, action: #selector(didClickNextButton(_:)), for: .touchUpInside)
         return button
     }()
