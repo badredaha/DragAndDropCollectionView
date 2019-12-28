@@ -11,7 +11,7 @@ import UIKit
 
 class SecretWordCollectionController: UIViewController {
     
-    var customView: CustomInputView?
+    var customViewKeyboardInput: CustomInputView?
     
     private let reuseIdentifier = "SecretWordCellView"
     
@@ -20,6 +20,7 @@ class SecretWordCollectionController: UIViewController {
     private var indexPathForEditCell: IndexPath?
     
     lazy private var collectionView: UICollectionView = {
+        
         let collectionViewLayout = UICollectionViewFlowLayout()
         collectionViewLayout.scrollDirection = .vertical
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
@@ -27,8 +28,7 @@ class SecretWordCollectionController: UIViewController {
         collectionView.contentInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         collectionView.backgroundView?.isOpaque = true
         collectionView.clipsToBounds = true
-        
-        
+        collectionView.alwaysBounceVertical = true
         return collectionView
     }()
     
@@ -52,7 +52,6 @@ class SecretWordCollectionController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
     
     override func viewDidLoad() {
         
@@ -83,16 +82,14 @@ class SecretWordCollectionController: UIViewController {
             addDragDropDelegate()
         }
         
-        //setupKeyboardInputView
+        //MARK: setupKeyboardInputView
         setupKeyboardInputView()
+         
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        let txtField = simulateUITextField()
-        self.view.addSubview(txtField)
-        txtField.becomeFirstResponder()
+        self.customViewKeyboardInput?.txtField.becomeFirstResponder()
     }
     
     private func reloadCollectionViewSection() {
@@ -100,6 +97,7 @@ class SecretWordCollectionController: UIViewController {
         DispatchQueue.main.asyncAfter(deadline: .now()+0.2) {
             self.collectionView.reloadSections(IndexSet(arrayLiteral: 0))
         }
+        
     }
     
     private func reloadDataWithAnimation(){
@@ -259,17 +257,16 @@ extension SecretWordCollectionController: UICollectionViewDataSource {
             secretCell.numberWordIncrement = indexPath.item + 1
             
             //Refacto /!\ self.indexPathForEditCell?.item == indexPath.item
-            if self.indexPathForEditCell?.item == indexPath.item{
-                secretCell.layer.zPosition = 100
+            if serviceSecretWord.isWordPlaceHorlder(at: indexPath.item){
+                secretCell.setupCellStateOpen()
+            }
+            
+            if indexPathForEditCell?.item == indexPath.item{
+                secretCell.bringViewToPosition(position: .above)
+                secretCell.setupCellStateOpen()
             }else{
-                secretCell.layer.zPosition = -1
+                secretCell.bringViewToPosition(position: .below)
             }
-            
-            //Refacto /!\ self.indexPathForEditCell?.item == indexPath.item
-            if serviceSecretWord.isWordPlaceHorlder(at: indexPath.item) || self.indexPathForEditCell?.item == indexPath.item{
-                secretCell.setupCellForNewWordOrEditWord()
-            }
-            
             return secretCell
         }
         
@@ -297,6 +294,10 @@ extension SecretWordCollectionController: UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 10.0
     }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
+    }
 }
 
 // MARK: extension SecretWordCellViewWordSecretDelegate
@@ -307,12 +308,14 @@ extension SecretWordCollectionController: SecretWordCellViewWordSecretDelegate{
             return
         }
         
-        self.customView?.isEditing = true
-        self.customView?.txtField.text = self.serviceSecretWord.words[indexPath.item]
+        self.customViewKeyboardInput?.isEditing = true
+        self.customViewKeyboardInput?.txtField.text = self.serviceSecretWord.words[indexPath.item]
         self.indexPathForEditCell = indexPath
         self.collectionView.reloadItems(at: [indexPath])
         self.toogleBlureBelowView(show: true, at: indexPath)
         
+        self.customViewKeyboardInput?.showRestoreButton(show: false)
+        self.customViewKeyboardInput?.txtField.becomeFirstResponder()
         resetDragDropDelegate()
     }
 }
@@ -320,35 +323,42 @@ extension SecretWordCollectionController: SecretWordCellViewWordSecretDelegate{
 //MARK: Add InputView For KeyBoard
 extension SecretWordCollectionController{
     
-    private func simulateUITextField() -> UITextField{
-        
-        let txtField = UITextField()
-        txtField.inputAccessoryView = self.customView
-        
-        return txtField
-        
-    }
-    
     private func setupKeyboardInputView(){
         // Acd setup CustomView to The inputAccessoryView to TextFiled
-        if customView == nil{
-            customView = CustomInputView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: 70))
+        if customViewKeyboardInput == nil{
+            customViewKeyboardInput = CustomInputView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: 70))
         }
         
-        customView?.didClick = { word in
+        customViewKeyboardInput?.didClick = { word in
             self.serviceSecretWord.addNewWord(word)
             self.reloadCollectionViewSection()
         }
         
-        customView?.didConfirmEditing = { word in
+        customViewKeyboardInput?.didConfirmEditing = { word in
             if let indexPath = self.indexPathForEditCell{
                 self.toogleBlureBelowView(show: false, at: indexPath)
                 self.serviceSecretWord.editWord(index: indexPath.item, word: word)
-                self.customView?.isEditing = false
+                self.customViewKeyboardInput?.isEditing = false
                 self.indexPathForEditCell = nil
                 self.collectionView.reloadItems(at: [indexPath])
+                
+                self.collectionView.contentOffset = .zero
+                
             }
             self.addDragDropDelegate()
+        }
+        
+        customViewKeyboardInput?.didClickRestore = {
+            self.serviceSecretWord.resetWords()
+            self.reloadDataWithAnimation()
+            self.customViewKeyboardInput?.showRestoreButton(show: false)
+            self.customViewKeyboardInput?.txtField.becomeFirstResponder()
+        }
+    }
+    
+    override var inputAccessoryView: UIView? {
+        get {
+            return self.customViewKeyboardInput
         }
     }
     
@@ -356,18 +366,22 @@ extension SecretWordCollectionController{
         return true
     }
     
+    override var canResignFirstResponder: Bool {
+        return true
+    }
+     
+    
 }
 
 extension SecretWordCollectionController: ServiceSecretWordDelegate{
     func maxWordsAuthorized() {
-        print("maxWordsAuthorized")
-        self.customView?.showRestoreButton(show: true)
+        self.customViewKeyboardInput?.showRestoreButton(show: true)
+        self.customViewKeyboardInput?.txtField.resignFirstResponder()
         addDragDropDelegate()
     }
     
     func canWriteNewWord() {
-        print("canWriteNewWord")
-        self.customView?.showRestoreButton(show: false)
+        self.customViewKeyboardInput?.showRestoreButton(show: false)
         resetDragDropDelegate()
     }
 }

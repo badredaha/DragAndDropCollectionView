@@ -156,6 +156,28 @@
             expect(expectation: mockDelegate.incrementOfCallMaxWordsAuthorized, result: 1)
         }
         
+        func test_reset_words_must_be_great_0() {
+            
+            let words = HelperServiceSecretWord.makeMaxWordsForSut()
+            words.forEach { (s) in
+                sut?.addNewWord(s)
+            }
+            sut?.resetWords()
+            
+            expect(expectation: (sut?.words.count)!, result: 1)
+        }
+        
+        func test_reset_words_must_have_place_holder() {
+            
+            let words = HelperServiceSecretWord.makeMaxWordsForSut()
+            words.forEach { (s) in
+                sut?.addNewWord(s)
+            }
+            sut?.resetWords()
+            
+            XCTAssertEqual(sut?.words[0], "_","must have a place holder")
+        }
+        
         
         private func expect(expectation: Int,result: Int, file: StaticString = #file, line: UInt=#line){
             XCTAssert(expectation == result,file: file,line: line)

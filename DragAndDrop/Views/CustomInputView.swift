@@ -124,8 +124,10 @@ class CustomInputView: UIView{
     func showRestoreButton(show: Bool){
         
         if show {
-            self.txtField.removeFromSuperview()
-            self.buttonNext.removeFromSuperview()
+            self.txtField.isHidden = true
+            self.buttonNext.isHidden = true
+            
+            self.restoreButton.isHidden = false
             self.addSubview(self.restoreButton)
             //Add Constraints  TextField Secret Text
             self.restoreButton.translatesAutoresizingMaskIntoConstraints = false
@@ -135,9 +137,9 @@ class CustomInputView: UIView{
             self.restoreButton.widthAnchor.constraint(equalTo: self.widthAnchor,constant: -15).isActive = true
             
         }else{
-            self.restoreButton.removeFromSuperview()
-            self.addTextField()
-            self.addButtonNext()
+            self.restoreButton.isHidden = true
+            self.txtField.isHidden = false
+            self.buttonNext.isHidden = false
         }
     }
     

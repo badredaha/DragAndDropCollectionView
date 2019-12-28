@@ -146,15 +146,24 @@ class SecretWordCellView: UICollectionViewCell {
         addDotImageView()
     }
     
-    func setupCellForNewWordOrEditWord(){
+    func setupCellForNewWord(){
+        setupCellStateOpen()
+    }
+    
+    func setupCellForEditWord(){
+        setupCellStateOpen()
+    }
+    
+    func setupCellStateOpen(){
         toogleRedBorder(show: true, ColorItemApp.BORDEAUX)
         self.numberWordIncrementLabel.textColor = ColorItemApp.GRAY
         self.containerIncrementView.backgroundColor = ColorItemApp.LIGHT_GRAY
         self.incrementViewHeight?.constant = 45
         
-        UIView.animate(withDuration: 0.1, delay: 0,usingSpringWithDamping: 1, initialSpringVelocity: 1,options: .showHideTransitionViews,animations: {
-                   self.layoutIfNeeded()
-               })
+       UIView.animate(withDuration: 0.5) {
+    
+        self.containerIncrementView.layoutIfNeeded()
+        }
         
       }
     
@@ -187,7 +196,7 @@ class SecretWordCellView: UICollectionViewCell {
         
        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapedLabel(_:)))
         tapGesture.numberOfTapsRequired = 1
-        self.secretWordLabel.addGestureRecognizer(tapGesture)
+        self.addGestureRecognizer(tapGesture)
         
         self.secretWordLabel.leftAnchor.constraint(equalTo: self.numberWordIncrementLabel.leftAnchor, constant: 10).isActive = true
         self.secretWordLabel.rightAnchor.constraint(equalTo: self.rightAnchor, constant: 5).isActive = true
@@ -213,19 +222,26 @@ class SecretWordCellView: UICollectionViewCell {
         self.dotimageView.widthAnchor.constraint(equalToConstant: 10).isActive = true
         self.dotimageView.heightAnchor.constraint(equalToConstant: 14).isActive = true
     }
+    func bringViewToPosition(position: CellPosition){
+        self.layer.zPosition = position.getValue()
+    }
 }
 
 //MARK: SecretWordCellViewProtocol
 extension SecretWordCellView: SecretWordCellViewProtocol{
     
     func dragBegin(){
+        
         self.toogleRedBorder(show: true,ColorItemApp.BORDEAUX)
+        
         self.backgroundColor = ColorItemApp.RED_BORDEAUX
         self.secretWordLabel.textColor = .white
         self.dotimageView.tintColor = .white
-        // add Anchor Height
+       
+        // add Height
         let marge:CGFloat = 10
         let height = self.frame.size.height/1.6
+        
         self.frame.size = CGSize(width: self.frame.width, height: height)
         self.frame.origin = CGPoint(x: self.frame.origin.x, y: self.frame.origin.y + height/4)
         
@@ -235,16 +251,25 @@ extension SecretWordCellView: SecretWordCellViewProtocol{
             self.layoutIfNeeded()
             self.setNeedsLayout()
         })
+        
         self.showIncrementView(false)
     }
     
     func dragEnd(){
+        
         self.toogleRedBorder(show: false)
+        
         self.backgroundColor = .white
         self.secretWordLabel.textColor = ColorItemApp.GRAY
         self.dotimageView.tintColor = .none
+        
         self.secretWordLabel.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor, constant: -5).isActive = true
+        
         self.showIncrementView(true)
+        
+        UIView.animate(withDuration: 0.5, delay: 0,usingSpringWithDamping: 1, initialSpringVelocity: 1,options: .allowUserInteraction,animations: {
+                   self.layoutIfNeeded()
+               })
     }
     
 }
@@ -255,5 +280,25 @@ extension SecretWordCellView: UIGestureRecognizerDelegate{
             return true
         }
         return false
+    }
+}
+
+//MARK: Cell Position
+enum CellPosition {
+    case above
+    case below
+    case none
+}
+
+extension CellPosition{
+    func getValue() -> CGFloat{
+        switch self {
+        case .above:
+            return 100
+        case .below:
+            return -1
+        case .none:
+            return 0
+        }
     }
 }

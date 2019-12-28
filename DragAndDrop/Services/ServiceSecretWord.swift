@@ -33,8 +33,8 @@ class ServiceSecretWord {
         self.delegate = delegate
     }
     
-    var words = ["🍎","💨","🥑","🍅","🥓","🍮","🏀","🥋","🏋🏻‍♀️","🏂","👩🏻‍💻","🌂"]
-    //var words = ["_"]
+    //var words = ["🍎","💨","🥑","🍅","🥓","🍮","🏀","🥋","🏋🏻‍♀️","🏂","👩🏻‍💻","🌂"]
+   var words = ["_"]
     
     func isPlaceHolderPresentAtEnd() -> Bool{
         if self.words.last == "_" {
@@ -77,6 +77,11 @@ class ServiceSecretWord {
         
         self.words.remove(at: atIndex)
         self.words.insert(word, at: atIndex)
+    }
+    
+    func resetWords(){
+        self.words.removeAll()
+        self.words.append("_")
     }
     
 }
