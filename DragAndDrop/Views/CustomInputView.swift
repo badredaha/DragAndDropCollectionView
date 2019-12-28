@@ -84,6 +84,10 @@ class CustomInputView: UIView{
         buttonNext.setTitle(self.isEditing ? "Edit" : "Next", for: .normal)
     }
     
+    func resetTextField(){
+        self.txtField.text = ""
+    }
+    
     //MARK: didClick to Next Button
     @objc private func didClickNextButton(_ sender: Any?){
         if let txt = self.txtField.text, !txt.isEmpty, !txt.trimmingCharacters(in: .whitespaces).isEmpty{

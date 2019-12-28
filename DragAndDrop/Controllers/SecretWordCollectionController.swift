@@ -37,8 +37,16 @@ class SecretWordCollectionController: UIViewController {
         blur.translatesAutoresizingMaskIntoConstraints = false
         blur.backgroundColor = self.collectionView.backgroundColor?.withAlphaComponent(0.7)
         blur.isOpaque = false
+        blur.isUserInteractionEnabled = true
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapBlureView(_:)))
+        blur.addGestureRecognizer(tapGesture)
         return blur
     }()
+    
+    @objc private func tapBlureView(_ sender: Any?){
+       valideEdit()
+    }
     
     convenience init() {
         self.init(nibName: nil, bundle:nil)
@@ -328,11 +336,12 @@ extension SecretWordCollectionController{
                 self.toogleBlureBelowView(show: false, at: indexPath)
                 self.serviceSecretWord.editWord(index: indexPath.item, word: word)
                 self.customViewKeyboardInput?.isEditing = false
+                self.customViewKeyboardInput?.resetTextField()
+                
                 self.indexPathForEditCell = nil
                 self.collectionView.reloadItems(at: [indexPath])
+                self.addDragDropDelegate()
             }
-            
-            self.addDragDropDelegate()
         }
         
         customViewKeyboardInput?.didClickRestore = {
@@ -340,6 +349,17 @@ extension SecretWordCollectionController{
             self.reloadDataWithAnimation()
             self.customViewKeyboardInput?.showRestoreButton(show: false)
             self.customViewKeyboardInput?.txtField.becomeFirstResponder()
+        }
+    }
+    
+    private func valideEdit(){
+        if let indexPath = self.indexPathForEditCell{
+            self.toogleBlureBelowView(show: false, at: indexPath)
+            self.customViewKeyboardInput?.isEditing = false
+            self.indexPathForEditCell = nil
+            self.collectionView.reloadItems(at: [indexPath])
+            self.addDragDropDelegate()
+            
         }
     }
     
@@ -364,11 +384,9 @@ extension SecretWordCollectionController: ServiceSecretWordDelegate{
     func maxWordsAuthorized() {
         self.customViewKeyboardInput?.showRestoreButton(show: true)
         self.customViewKeyboardInput?.txtField.resignFirstResponder()
-        addDragDropDelegate()
     }
     
     func canWriteNewWord() {
         self.customViewKeyboardInput?.showRestoreButton(show: false)
-        resetDragDropDelegate()
     }
 }
