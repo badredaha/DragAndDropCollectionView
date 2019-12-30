@@ -17,7 +17,7 @@ protocol SecretWordCellViewProtocol{
     var numberWordIncrement: Int { get set }
     
     func dragBegin()
-    func dragEnd()
+    
 }
 
 class SecretWordCellView: UICollectionViewCell {
@@ -62,7 +62,7 @@ class SecretWordCellView: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         self.secretWordLabel.text = nil
-        
+        self.numberWordIncrementLabel.text = nil
         self.toogleRedBorder(show: false)
         self.backgroundColor = .white
         self.secretWordLabel.textColor = ColorItemApp.GRAY
@@ -146,6 +146,7 @@ class SecretWordCellView: UICollectionViewCell {
         addDotImageView()
     }
     
+    //MARK: Setup New/Edit Word
     func setupCellForNewWord(){
         setupCellStateOpen()
     }
@@ -160,10 +161,9 @@ class SecretWordCellView: UICollectionViewCell {
         self.containerIncrementView.backgroundColor = ColorItemApp.LIGHT_GRAY
         self.incrementViewHeight?.constant = 45
         
-       UIView.animate(withDuration: 0.5) {
-    
-        self.containerIncrementView.layoutIfNeeded()
-        }
+        UIView.animate(withDuration: 0.8, delay: 0 ,usingSpringWithDamping: 0.7, initialSpringVelocity: 1,options: .transitionCurlDown,animations: {
+           self.layoutIfNeeded()
+       })
         
       }
     
@@ -253,23 +253,6 @@ extension SecretWordCellView: SecretWordCellViewProtocol{
         })
         
         self.showIncrementView(false)
-    }
-    
-    func dragEnd(){
-        
-        self.toogleRedBorder(show: false)
-        
-        self.backgroundColor = .white
-        self.secretWordLabel.textColor = ColorItemApp.GRAY
-        self.dotimageView.tintColor = .none
-        
-        self.secretWordLabel.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor, constant: -5).isActive = true
-        
-        self.showIncrementView(true)
-        
-        UIView.animate(withDuration: 0.5, delay: 0,usingSpringWithDamping: 1, initialSpringVelocity: 1,options: .allowUserInteraction,animations: {
-                   self.layoutIfNeeded()
-               })
     }
     
 }

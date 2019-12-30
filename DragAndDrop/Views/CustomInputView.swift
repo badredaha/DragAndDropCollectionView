@@ -15,6 +15,12 @@ class CustomInputView: UIView{
     var didConfirmEditing: ((_ text: String)-> Void)?
     var didClickRestore: (()-> Void)?
     
+    var isEditing: Bool = false{
+           didSet {
+            changeTitleButton()
+           }
+       }
+
     lazy var txtField: UITextField = {
         let txtfield = UITextField()
         txtfield.roundCorners(corners: [Corners.left], radius: 6)
@@ -51,24 +57,23 @@ class CustomInputView: UIView{
         return button
     }()
     
-    var isEditing: Bool = false{
-        didSet{
-            changeTitleButton()
-        }
-    }
-    
+    required init?(coder: NSCoder) {
+           fatalError("init(coder:) has not been implemented")
+       }
     
     override init(frame: CGRect) {
-        
         super.init(frame: frame)
+        setupInputAndButton()
+    }
+    
+    private func setupInputAndButton(){
         addButtonNext()
         // Add TextField Secret Text
         addTextField()
     }
     
     private func addButtonNext(){
-        
-        // Add TextField to CustomView
+    
         self.addSubview(buttonNext)
         
         //Add Constraints Button Next
@@ -77,16 +82,29 @@ class CustomInputView: UIView{
         buttonNext.trailingAnchor.constraint(equalTo: self.trailingAnchor,constant: -15).isActive = true
         buttonNext.widthAnchor.constraint(equalToConstant: 100).isActive = true
         buttonNext.heightAnchor.constraint(equalTo: self.heightAnchor,constant: -20).isActive = true
-        // Add Button Next
+        
+    }
+    private func addTextField(){
+        
+        let paddingView: UIView = UIView(frame: CGRect(x: 0, y: 0, width: 12 , height: 5))
+        txtField.leftView = paddingView
+        txtField.leftViewMode = .always
+        
+        // Add TextField to CustomView
+        addSubview(txtField)
+        
+        //Add Constraints TextField Secret Text
+        txtField.translatesAutoresizingMaskIntoConstraints = false
+        txtField.centerYAnchor.constraint(equalTo: buttonNext.centerYAnchor).isActive = true
+        txtField.rightAnchor.constraint(equalTo: buttonNext.leftAnchor).isActive = true
+        txtField.leadingAnchor.constraint(equalTo: self.leadingAnchor,constant: 15).isActive = true
+        txtField.trailingAnchor.constraint(equalTo: buttonNext.leadingAnchor).isActive = true
+        txtField.heightAnchor.constraint(equalTo: buttonNext.heightAnchor).isActive = true
         
     }
     
     private func changeTitleButton(){
         buttonNext.setTitle(self.isEditing ? "Edit" : "Next", for: .normal)
-    }
-    
-    func resetTextField(){
-        self.txtField.text = ""
     }
     
     //MARK: didClick to Next Button
@@ -102,36 +120,9 @@ class CustomInputView: UIView{
         }
     }
     
-    //MARK: click restoreButton
-    @objc private func restore(_ sender: Any?){
-        self.didClickRestore?()
-    }
-    
-    private func addTextField(){
-        
-        let paddingView: UIView = UIView(frame: CGRect(x: 0, y: 0, width: 12 , height: 5))
-        txtField.leftView = paddingView
-        txtField.leftViewMode = .always
-        
-        // Add TextField to CustomView
-        addSubview(txtField)
-        
-        //Add Constraints  TextField Secret Text
-        txtField.translatesAutoresizingMaskIntoConstraints = false
-        txtField.centerYAnchor.constraint(equalTo: buttonNext.centerYAnchor).isActive = true
-        txtField.rightAnchor.constraint(equalTo: buttonNext.leftAnchor).isActive = true
-        txtField.leadingAnchor.constraint(equalTo: self.leadingAnchor,constant: 15).isActive = true
-        txtField.trailingAnchor.constraint(equalTo: buttonNext.leadingAnchor).isActive = true
-        txtField.heightAnchor.constraint(equalTo: buttonNext.heightAnchor).isActive = true
-        
-    }
-    
     func showRestoreButton(show: Bool){
-        
         if show {
-            self.txtField.isHidden = true
-            self.buttonNext.isHidden = true
-            
+            removeInputAndButton()
             self.restoreButton.isHidden = false
             self.addSubview(self.restoreButton)
             //Add Constraints  TextField Secret Text
@@ -140,16 +131,24 @@ class CustomInputView: UIView{
             self.restoreButton.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
             self.restoreButton.heightAnchor.constraint(equalTo: self.heightAnchor,constant: -15).isActive = true
             self.restoreButton.widthAnchor.constraint(equalTo: self.widthAnchor,constant: -15).isActive = true
-            
         }else{
-            self.restoreButton.isHidden = true
-            self.txtField.isHidden = false
-            self.buttonNext.isHidden = false
+            self.restoreButton.removeFromSuperview()
+            setupInputAndButton()
         }
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    //MARK: click restoreButton
+    @objc private func restore(_ sender: Any?){
+        self.didClickRestore?()
+    }
+    
+    func resetTextField(){
+        self.txtField.text = ""
+    }
+      
+    private func removeInputAndButton(){
+        self.txtField.removeFromSuperview()
+        self.buttonNext.removeFromSuperview()
     }
 }
 

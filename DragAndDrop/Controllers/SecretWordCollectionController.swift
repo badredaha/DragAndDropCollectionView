@@ -11,6 +11,8 @@ import UIKit
 
 class SecretWordCollectionController: UIViewController {
     
+    private let itemsPerRow:CGFloat  = 3
+    
     var customViewKeyboardInput: CustomInputView?
     
     private let reuseIdentifier = "SecretWordCellView"
@@ -46,7 +48,6 @@ class SecretWordCollectionController: UIViewController {
     
     @objc private func tapBlureView(_ sender: Any?){
        valideEdit()
-        
     }
     
     convenience init() {
@@ -93,26 +94,25 @@ class SecretWordCollectionController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        //MARK: Responder
         self.customViewKeyboardInput?.txtField.becomeFirstResponder()
     }
     
     private func reloadCollectionViewSection() {
         //TODO Refacto Section 0 because min Section will be 1 Section
-        DispatchQueue.main.asyncAfter(deadline: .now()+0.2) {
-            self.collectionView.reloadSections(IndexSet(arrayLiteral: 0))
+        self.collectionView.performBatchUpdates({
+           self.collectionView.reloadSections(IndexSet(arrayLiteral: 0))
+        }) { (finish) in
         }
-        
     }
     
-    private func reloadDataWithAnimation(){
-        UIView.transition(with: self.collectionView, duration: 0.6, options: .transitionCrossDissolve, animations: {
-            self.collectionView.reloadData()
-        }, completion: nil)
+      private func reloadData() {
+          //TODO Refacto Section 0 because min Section will be 1 Section
+        self.collectionView.reloadData()
     }
     
     @objc private func toogleBlureBelowView(show: Bool, at indexPath: IndexPath?){
         // Add Blur
-        //Frame
         if !show {
             self.blurView.removeFromSuperview()
             return
@@ -144,21 +144,18 @@ extension SecretWordCollectionController: OrderWordProtocol{
     func reorder(collectionView: UICollectionView, _ destinationIndexPath: IndexPath,_ coordinator: UICollectionViewDropCoordinator) {
         if let item = coordinator.items.first{
             if let sourceIndexPath = item.sourceIndexPath {
-                
                 collectionView.performBatchUpdates({
-                    
                     serviceSecretWord.words.remove(at: sourceIndexPath.item)
                     if let localObject = item.dragItem.localObject{
                         serviceSecretWord.words.insert(localObject as! String, at: destinationIndexPath.item)
                     }
-                    
                     collectionView.deleteItems(at: [sourceIndexPath])
                     collectionView.insertItems(at: [destinationIndexPath])
-                    
-                }){ (finished) in
-                }
+                })
+                
                 coordinator.drop(item.dragItem, toItemAt: destinationIndexPath)
-                self.reloadCollectionViewSection()
+                
+               self.reloadCollectionViewSection()
             }
         }
     }
@@ -166,6 +163,7 @@ extension SecretWordCollectionController: OrderWordProtocol{
 
 // MARK: extension UICollectionViewDropDelegate
 extension SecretWordCollectionController: UICollectionViewDropDelegate {
+   
     func collectionView(_ collectionView: UICollectionView, canHandle session: UIDropSession) -> Bool {
         return session.hasItemsConforming(toTypeIdentifiers: ["iden"])
     }
@@ -192,24 +190,31 @@ extension SecretWordCollectionController: UICollectionViewDropDelegate {
 
 // MARK: extension UICollectionViewDragDelegate
 extension SecretWordCollectionController: UICollectionViewDragDelegate{
-    
-    func collectionView(_ collectionView: UICollectionView, dragSessionDidEnd session: UIDragSession) {
-        self.reloadCollectionViewSection()
+
+    func collectionView(_ collectionView: UICollectionView, dragSessionWillBegin session: UIDragSession) {
+        
     }
     
+    func collectionView(_ collectionView: UICollectionView, dragSessionDidEnd session: UIDragSession) {
+  
+        self.reloadCollectionViewSection()
+    }
+   
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem]{
+        
+        session.localContext = indexPath
         
         if !self.serviceSecretWord.isWordPlaceHorlder(at: indexPath.item){
             if !session.hasItemsConforming(toTypeIdentifiers: ["iden"]){
-              
-                if let cell = collectionView.cellForItem(at: indexPath) as? SecretWordCellView{
-                   cell.dragBegin()
-               }
                 
                 let item = self.serviceSecretWord.words[indexPath.row]
                 let itemProvider = NSItemProvider(item: item as NSSecureCoding, typeIdentifier: "iden")
                 let dragItem = UIDragItem(itemProvider: itemProvider)
                 dragItem.localObject = item
+                
+                if let cell = collectionView.cellForItem(at: indexPath) as? SecretWordCellView{
+                    cell.dragBegin()
+                }
                 
                 return [dragItem]
             }
@@ -260,12 +265,12 @@ extension SecretWordCollectionController: UICollectionViewDataSource {
             secretCell.numberWordIncrement = indexPath.item + 1
             
             if serviceSecretWord.isWordPlaceHorlder(at: indexPath.item){
-                secretCell.setupCellStateOpen()
+                secretCell.setupCellForNewWord()
             }
             
             if indexPathForEditCell?.item == indexPath.item{
                 secretCell.bringViewToPosition(position: .above)
-                secretCell.setupCellStateOpen()
+                secretCell.setupCellForEditWord()
             }else{
                 secretCell.bringViewToPosition(position: .below)
             }
@@ -279,24 +284,37 @@ extension SecretWordCollectionController: UICollectionViewDataSource {
 
 // MARK: extension UICollectionViewDelegateFlowLayout
 extension SecretWordCollectionController: UICollectionViewDelegateFlowLayout{
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize{
+  
+    
+    func collectionView(_ collectionView: UICollectionView,
+                          layout collectionViewLayout: UICollectionViewLayout,
+                          sizeForItemAt indexPath: IndexPath) -> CGSize {
+        //2
+        let paddingSpace = collectionView.contentInset.left * (itemsPerRow + 1)
+        let availableWidth = self.collectionView.frame.width - paddingSpace
+        let widthPerItem = availableWidth / CGFloat(itemsPerRow) - 8
         
         if self.indexPathForEditCell?.item == indexPath.item || self.serviceSecretWord.isWordPlaceHorlder(at: indexPath.item){
             
-            return CGSize(width: self.view.bounds.size.width/3 - 20, height: 120)
+            return CGSize(width: widthPerItem, height: 120)
         }
-        
-        return CGSize(width: self.view.bounds.size.width/3 - 20, height: 80)
-    }
+        return CGSize(width: widthPerItem, height: 80)
+      }
+      
+      //3
+      func collectionView(_ collectionView: UICollectionView,
+                          layout collectionViewLayout: UICollectionViewLayout,
+                          insetForSectionAt section: Int) -> UIEdgeInsets {
+        return collectionView.contentInset
+      }
+      
+      // 4
+      func collectionView(_ collectionView: UICollectionView,
+                          layout collectionViewLayout: UICollectionViewLayout,
+                          minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return collectionView.contentInset.left
+      }
 
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 10.0
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 10.0
-    }
-  
 }
 
 // MARK: extension SecretWordCellViewWordSecretDelegate
@@ -306,11 +324,17 @@ extension SecretWordCollectionController: SecretWordCellViewWordSecretDelegate{
         self.customViewKeyboardInput?.isEditing = true
         self.customViewKeyboardInput?.txtField.text = self.serviceSecretWord.words[indexPath.item]
         self.indexPathForEditCell = indexPath
-        self.collectionView.reloadItems(at: [indexPath])
+        
+        //self.collectionView.reloadItems(at: [indexPath])
+        self.reloadData()
+    
         self.toogleBlureBelowView(show: true, at: indexPath)
         
         self.customViewKeyboardInput?.showRestoreButton(show: false)
-        self.customViewKeyboardInput?.txtField.becomeFirstResponder()
+        
+        //MARK: Responder
+        //self.customViewKeyboardInput?.txtField.becomeFirstResponder()
+        
         resetDragDropDelegate()
     }
 }
@@ -326,7 +350,8 @@ extension SecretWordCollectionController{
         
         customViewKeyboardInput?.didClick = { word in
             self.serviceSecretWord.addNewWord(word)
-            self.reloadCollectionViewSection()
+            
+            self.reloadData()
         }
         
         customViewKeyboardInput?.didConfirmEditing = { word in
@@ -338,8 +363,10 @@ extension SecretWordCollectionController{
         
         customViewKeyboardInput?.didClickRestore = {
             self.serviceSecretWord.resetWords()
-            self.reloadDataWithAnimation()
+            self.reloadCollectionViewSection()
             self.customViewKeyboardInput?.showRestoreButton(show: false)
+            
+            //MARK: Responder
             self.customViewKeyboardInput?.txtField.becomeFirstResponder()
         }
     }
@@ -349,12 +376,16 @@ extension SecretWordCollectionController{
 
             self.customViewKeyboardInput?.isEditing = false
             self.customViewKeyboardInput?.resetTextField()
-            self.customViewKeyboardInput?.txtField.resignFirstResponder()
+            
+            //MARK: Responder resignFirstResponder
+            //self.customViewKeyboardInput?.txtField.resignFirstResponder()
             
             self.toogleBlureBelowView(show: false, at: indexPath)
             self.customViewKeyboardInput?.isEditing = false
             self.indexPathForEditCell = nil
-            self.collectionView.reloadItems(at: [indexPath])
+            
+            self.reloadData()
+
         }
         
         if serviceSecretWord.isMaxWordAchieved() {
@@ -385,10 +416,10 @@ extension SecretWordCollectionController{
 extension SecretWordCollectionController: ServiceSecretWordDelegate{
     func maxWordsAuthorized() {
         self.customViewKeyboardInput?.showRestoreButton(show: true)
-        self.customViewKeyboardInput?.txtField.resignFirstResponder()
+        //MARK: Responder resignFirstResponder
+        //self.customViewKeyboardInput?.txtField.resignFirstResponder()
     }
     
     func canWriteNewWord() {
-        self.customViewKeyboardInput?.showRestoreButton(show: false)
     }
 }
